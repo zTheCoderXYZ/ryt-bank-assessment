@@ -1,6 +1,13 @@
 export const translations = {
   en: {
     translation: {
+      login: {
+        welcome: "Welcome to Ryt Bank",
+        button: "Login",
+      },
+      logout: {
+        button: "Logout",
+      },
       modal: {
         title: "Modal",
         body: "This is a modal",
@@ -8,6 +15,7 @@ export const translations = {
       },
       home: {
         welcome: "Welcome!",
+        balance: "Balance",
         step1: {
           title: "Step 1: Try it out",
           body: "Edit <bold>app/(tabs)/index.tsx</bold> to see changes. Press <bold>{{shortcut}}</bold> to open developer tools.",
@@ -26,6 +34,10 @@ export const translations = {
           more: "More",
           delete: "Delete",
         },
+      },
+      payment: {
+        title: "Payment",
+        selectPerson: "Who are you sending payment to?",
       },
       explore: {
         title: "Explore",

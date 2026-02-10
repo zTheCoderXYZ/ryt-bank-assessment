@@ -1,30 +1,5 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-import { useTranslation } from 'react-i18next';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import '@/i18n';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { Slot } from "expo-router";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const { t } = useTranslation();
-
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: 'modal', title: t('modal.title') }}
-        />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+  return <Slot />;
 }
