@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import * as LocalAuthentication from "expo-local-authentication";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, StyleSheet } from "react-native";
+import { Button, Modal, Pressable, StyleSheet, View } from "react-native";
 
 import { login } from "@/api/login.api";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
@@ -67,6 +67,15 @@ export default function LoginPage() {
         >
           {t("login.welcome")}
         </ThemedText>
+        <Button
+          title={t("login.button")}
+          onPress={() => {
+            const success = login();
+            if (success) {
+              router.replace("/(main)");
+            }
+          }}
+        />
         <ThemedView style={styles.bioButton}>
           <Button
             title={bioLoading ? "Checking..." : "Login with Biometrics"}
@@ -74,9 +83,24 @@ export default function LoginPage() {
             disabled={bioLoading}
           />
         </ThemedView>
-        {bioError ? (
-          <ThemedText style={styles.bioError}>{bioError}</ThemedText>
-        ) : null}
+        <Modal
+          animationType="fade"
+          transparent
+          visible={Boolean(bioError)}
+          onRequestClose={() => setBioError(null)}
+        >
+          <View style={styles.modalBackdrop}>
+            <ThemedView style={styles.modalCard}>
+              <ThemedText type="defaultSemiBold" style={styles.modalTitle}>
+                Biometric Login
+              </ThemedText>
+              <ThemedText style={styles.modalMessage}>{bioError}</ThemedText>
+              <Pressable onPress={() => setBioError(null)}>
+                <ThemedText type="defaultSemiBold">OK</ThemedText>
+              </Pressable>
+            </ThemedView>
+          </View>
+        </Modal>
       </ThemedView>
     </ParallaxScrollView>
   );
@@ -104,5 +128,25 @@ const styles = StyleSheet.create({
   },
   bioError: {
     marginTop: 8,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 360,
+    padding: 20,
+    borderRadius: 12,
+    gap: 12,
+  },
+  modalTitle: {
+    fontSize: 18,
+  },
+  modalMessage: {
+    fontSize: 14,
   },
 });
