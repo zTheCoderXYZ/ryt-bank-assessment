@@ -1,16 +1,12 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { useTransactionsStore } from "@/store/transactions";
 import { router } from "expo-router";
 import { Button } from "react-native";
-import { usePaymentFlow } from "./_layout";
 
 export default function PaymentStep4() {
-  const { receiver, amount, note } = usePaymentFlow();
-  const transactionId =
-    "TXN" +
-    Math.floor(Math.random() * 1000000)
-      .toString()
-      .padStart(6, "0");
+  const { transactions } = useTransactionsStore();
+
   return (
     <ThemedView
       style={{
@@ -24,12 +20,19 @@ export default function PaymentStep4() {
       <ThemedText style={{ fontSize: 24, fontWeight: "bold" }}>
         Payment Successful!
       </ThemedText>
-      <ThemedText>Transaction ID: {transactionId}</ThemedText>
       <ThemedText>
-        Receiver: {receiver?.name} ({receiver?.accountNumber})
+        Transaction ID: {transactions[transactions.length - 1]?.id}
       </ThemedText>
-      <ThemedText>Amount: {amount}</ThemedText>
-      <ThemedText>Note: {note}</ThemedText>
+      <ThemedText>
+        Receiver: {transactions[transactions.length - 1]?.receiver?.name} (
+        {transactions[transactions.length - 1]?.receiver?.accountNumber})
+      </ThemedText>
+      <ThemedText>
+        Amount: {transactions[transactions.length - 1]?.amount}
+      </ThemedText>
+      <ThemedText>
+        Note: {transactions[transactions.length - 1]?.note}
+      </ThemedText>
 
       <Button
         title="Done"

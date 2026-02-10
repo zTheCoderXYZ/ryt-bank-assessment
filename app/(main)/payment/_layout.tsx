@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { createContext, useContext, useMemo, useState } from "react";
 
-type Receiver = { name: string; accountNumber: string } | null;
+export type Receiver = { name: string; accountNumber: string };
 
 type PaymentFlowState = {
   receiver: Receiver;
@@ -10,6 +10,7 @@ type PaymentFlowState = {
   setReceiver: (r: Receiver) => void;
   setAmount: (a: string) => void;
   setNote: (n: string) => void;
+  reset: () => void;
 };
 
 const PaymentFlowContext = createContext<PaymentFlowState | null>(null);
@@ -22,11 +23,20 @@ export function usePaymentFlow() {
 }
 
 export default function PaymentModule() {
-  const [receiver, setReceiver] = useState<Receiver>(null);
+  const initialReceiver: Receiver = {
+    name: "",
+    accountNumber: "",
+  };
+  const [receiver, setReceiver] = useState<Receiver>(initialReceiver);
   const [amount, setAmount] = useState<string>("");
   const [note, setNote] = useState<string>("");
+  const reset = () => {
+    setReceiver(initialReceiver);
+    setAmount("");
+    setNote("");
+  };
   const value = useMemo(
-    () => ({ receiver, amount, note, setReceiver, setAmount, setNote }),
+    () => ({ receiver, amount, note, setReceiver, setAmount, setNote, reset }),
     [receiver, amount, note],
   );
 

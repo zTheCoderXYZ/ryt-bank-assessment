@@ -14,6 +14,8 @@ export const translations = {
         link: "Go to home screen",
       },
       home: {
+        noTransactions: "No recent transactions.",
+        recentTransactions: "Recent Transactions",
         welcome: "Welcome!",
         balance: "Balance",
         step1: {

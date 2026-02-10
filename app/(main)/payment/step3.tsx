@@ -1,6 +1,7 @@
-import { transfer } from "@/api/transfer.api";
+import { useTransferMutation } from "@/api/transfer.api";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { AUTH_FALLBACK_PIN } from "@/constants/auth";
 import * as LocalAuthentication from "expo-local-authentication";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -14,11 +15,10 @@ import {
 } from "react-native";
 import { usePaymentFlow } from "./_layout";
 
-const FALLBACK_PIN = "1234";
-
 export default function PaymentStep3() {
-  const { amount, note, receiver } = usePaymentFlow();
+  const { amount, note, receiver, reset } = usePaymentFlow();
   const [isConfirming, setIsConfirming] = useState(false);
+  const { mutateAsync: executeTransfer } = useTransferMutation();
 
   const [showPinModal, setShowPinModal] = useState(false);
   const [pin, setPin] = useState("");
@@ -42,18 +42,16 @@ export default function PaymentStep3() {
       });
 
       if (result.success) {
-        try {
-          const result = await transfer();
-
-          if (!result) {
-            // handle transfer failure
-            return;
-          }
-          router.dismissAll();
-          router.push("/payment/step4");
-        } catch (error) {
-          // handle transfer error
-        }
+        await executeTransfer(
+          { receiver, amount, note },
+          {
+            onSuccess: () => {
+              reset();
+              router.dismissAll();
+              router.push("/payment/step4");
+            },
+          },
+        );
       } else {
         setShowPinModal(true); // fallback to password on failure/cancel
       }
@@ -63,22 +61,20 @@ export default function PaymentStep3() {
   };
 
   const handlePinSubmit = async () => {
-    if (pin === FALLBACK_PIN) {
+    if (pin === AUTH_FALLBACK_PIN) {
       setPinError(null);
       setShowPinModal(false);
       setPin("");
-      try {
-        const result = await transfer();
-
-        if (!result) {
-          // handle transfer failure
-          return;
-        }
-        router.dismissAll();
-        router.push("/payment/step4");
-      } catch (error) {
-        // handle transfer error
-      }
+      await executeTransfer(
+        { receiver, amount, note },
+        {
+          onSuccess: () => {
+            reset();
+            router.dismissAll();
+            router.push("/payment/step4");
+          },
+        },
+      );
       return;
     }
     setPinError("Incorrect password. Please try again.");

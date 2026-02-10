@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 
-import { login } from "@/api/login.api";
+import { useLoginMutation } from "@/api/login.api";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -25,6 +25,7 @@ export default function LoginPage() {
   const [showPinModal, setShowPinModal] = useState(false);
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState<string | null>(null);
+  const { mutateAsync: executeLogin } = useLoginMutation();
 
   const handleBiometricLogin = async () => {
     setBioError(null);
@@ -44,10 +45,14 @@ export default function LoginPage() {
       });
 
       if (result.success) {
-        const success = await login();
-        if (success) {
-          router.replace("/(main)");
-        }
+        await executeLogin(undefined, {
+          onSuccess: () => {
+            router.replace("/(main)");
+          },
+          onError: () => {
+            setBioError("Login failed.");
+          },
+        });
       } else {
         setShowPinModal(true);
       }
@@ -64,10 +69,14 @@ export default function LoginPage() {
       setPinError(null);
       setShowPinModal(false);
       setPin("");
-      const success = await login();
-      if (success) {
-        router.replace("/(main)");
-      }
+      await executeLogin(undefined, {
+        onSuccess: () => {
+          router.replace("/(main)");
+        },
+        onError: () => {
+          setPinError("Login failed.");
+        },
+      });
       return;
     }
 
