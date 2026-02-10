@@ -1,4 +1,6 @@
 import { Image } from "expo-image";
+import * as LocalAuthentication from "expo-local-authentication";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, StyleSheet } from "react-native";
 
@@ -10,6 +12,40 @@ import { router } from "expo-router";
 
 export default function LoginPage() {
   const { t } = useTranslation();
+  const [bioError, setBioError] = useState<string | null>(null);
+  const [bioLoading, setBioLoading] = useState(false);
+
+  const handleBiometricLogin = async () => {
+    setBioError(null);
+    setBioLoading(true);
+    try {
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+      if (!hasHardware || !isEnrolled) {
+        setBioError("Biometrics not available on this device.");
+        return;
+      }
+
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Log in with biometrics",
+        fallbackLabel: "Use passcode",
+      });
+
+      if (result.success) {
+        const success = login();
+        if (success) {
+          router.replace("/(main)");
+        }
+      } else {
+        setBioError("Authentication cancelled.");
+      }
+    } catch (error) {
+      setBioError("Biometric authentication failed.");
+    } finally {
+      setBioLoading(false);
+    }
+  };
 
   return (
     <ParallaxScrollView
@@ -31,15 +67,16 @@ export default function LoginPage() {
         >
           {t("login.welcome")}
         </ThemedText>
-        <Button
-          title={t("login.button")}
-          onPress={() => {
-            const success = login();
-            if (success) {
-              router.replace("/(main)");
-            }
-          }}
-        />
+        <ThemedView style={styles.bioButton}>
+          <Button
+            title={bioLoading ? "Checking..." : "Login with Biometrics"}
+            onPress={handleBiometricLogin}
+            disabled={bioLoading}
+          />
+        </ThemedView>
+        {bioError ? (
+          <ThemedText style={styles.bioError}>{bioError}</ThemedText>
+        ) : null}
       </ThemedView>
     </ParallaxScrollView>
   );
@@ -61,5 +98,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: "absolute",
+  },
+  bioButton: {
+    marginTop: 12,
+  },
+  bioError: {
+    marginTop: 8,
   },
 });
