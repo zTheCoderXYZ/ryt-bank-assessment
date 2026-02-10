@@ -9,7 +9,12 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSTouchUsageDescription": "Use Touch ID to log in.",
+        "NSFaceIDUsageDescription": "Use Face ID to log in."
+      },
+      "bundleIdentifier": "com.zshafie-naluri.rytbankassessment"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +24,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.zshafie_naluri.rytbankassessment"
     },
     "web": {
       "output": "static",
