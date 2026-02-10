@@ -42,8 +42,8 @@ export default function HomeScreen() {
         </ThemedText>
         <Button
           title={t("logout.button")}
-          onPress={() => {
-            const success = logout();
+          onPress={async () => {
+            const success = await logout();
 
             if (success) {
               router.replace("/(auth)/login");

@@ -18,6 +18,8 @@ export default function PaymentStep1() {
   const [activeTab, setActiveTab] = useState<"all" | "contacts">("all");
   const [contacts, setContacts] = useState<ContactRow[]>([]);
   const [permissionError, setPermissionError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     (async () => {
@@ -52,16 +54,28 @@ export default function PaymentStep1() {
   const listData: Array<ContactRow | ReceiverRow> = isContacts
     ? contacts
     : allReceivers;
+  const totalPages = Math.ceil(listData.length / pageSize) || 1;
+  const pagedData = listData.slice(0, page * pageSize);
+
+  useEffect(() => {
+    setPage(1);
+  }, [activeTab, contacts.length, allReceivers.length]);
 
   return (
     <FlatList
-      data={listData}
+      data={pagedData}
       keyExtractor={(item) =>
         isContacts
           ? (item as ContactRow).id
           : (item as ReceiverRow).accountNumber
       }
       ItemSeparatorComponent={() => <View style={styles.separator} />}
+      onEndReachedThreshold={0.3}
+      onEndReached={() => {
+        if (page < totalPages) {
+          setPage((prev) => prev + 1);
+        }
+      }}
       ListHeaderComponent={
         <ThemedView style={{ margin: 16, padding: 16 }}>
           <ThemedView style={styles.titleContainer}>

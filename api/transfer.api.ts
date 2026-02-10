@@ -1,15 +1,12 @@
-import { useAuthStore } from "@/store/auth";
 import { useLoadingStore } from "@/store/loading";
 
-export const logout = async () => {
+export const transfer = async () => {
   const { start, stop } = useLoadingStore.getState();
   start();
   try {
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    useAuthStore.getState().logout();
+    return true;
   } finally {
     stop();
   }
-
-  return true;
 };

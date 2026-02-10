@@ -2,18 +2,29 @@ import { Image } from "expo-image";
 import * as LocalAuthentication from "expo-local-authentication";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Modal, Pressable, StyleSheet, View } from "react-native";
+import {
+  Button,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 
 import { login } from "@/api/login.api";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { AUTH_FALLBACK_PIN } from "@/constants/auth";
 import { router } from "expo-router";
 
 export default function LoginPage() {
   const { t } = useTranslation();
   const [bioError, setBioError] = useState<string | null>(null);
   const [bioLoading, setBioLoading] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pin, setPin] = useState("");
+  const [pinError, setPinError] = useState<string | null>(null);
 
   const handleBiometricLogin = async () => {
     setBioError(null);
@@ -23,7 +34,7 @@ export default function LoginPage() {
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
       if (!hasHardware || !isEnrolled) {
-        setBioError("Biometrics not available on this device.");
+        setShowPinModal(true);
         return;
       }
 
@@ -33,18 +44,34 @@ export default function LoginPage() {
       });
 
       if (result.success) {
-        const success = login();
+        const success = await login();
         if (success) {
           router.replace("/(main)");
         }
       } else {
-        setBioError("Authentication cancelled.");
+        setShowPinModal(true);
       }
     } catch (error) {
       setBioError("Biometric authentication failed.");
+      setShowPinModal(true);
     } finally {
       setBioLoading(false);
     }
+  };
+
+  const handlePinSubmit = async () => {
+    if (pin === AUTH_FALLBACK_PIN) {
+      setPinError(null);
+      setShowPinModal(false);
+      setPin("");
+      const success = await login();
+      if (success) {
+        router.replace("/(main)");
+      }
+      return;
+    }
+
+    setPinError("Incorrect password. Please try again.");
   };
 
   return (
@@ -67,18 +94,10 @@ export default function LoginPage() {
         >
           {t("login.welcome")}
         </ThemedText>
-        <Button
-          title={t("login.button")}
-          onPress={() => {
-            const success = login();
-            if (success) {
-              router.replace("/(main)");
-            }
-          }}
-        />
+
         <ThemedView style={styles.bioButton}>
           <Button
-            title={bioLoading ? "Checking..." : "Login with Biometrics"}
+            title={bioLoading ? "Checking..." : t("login.button")}
             onPress={handleBiometricLogin}
             disabled={bioLoading}
           />
@@ -86,18 +105,33 @@ export default function LoginPage() {
         <Modal
           animationType="fade"
           transparent
-          visible={Boolean(bioError)}
-          onRequestClose={() => setBioError(null)}
+          visible={showPinModal}
+          onRequestClose={() => setShowPinModal(false)}
         >
           <View style={styles.modalBackdrop}>
             <ThemedView style={styles.modalCard}>
               <ThemedText type="defaultSemiBold" style={styles.modalTitle}>
-                Biometric Login
+                Enter Password
               </ThemedText>
-              <ThemedText style={styles.modalMessage}>{bioError}</ThemedText>
-              <Pressable onPress={() => setBioError(null)}>
-                <ThemedText type="defaultSemiBold">OK</ThemedText>
-              </Pressable>
+              <TextInput
+                value={pin}
+                onChangeText={setPin}
+                placeholder="1234"
+                keyboardType="number-pad"
+                secureTextEntry
+                style={styles.input}
+              />
+              {pinError ? (
+                <ThemedText style={styles.errorText}>{pinError}</ThemedText>
+              ) : null}
+              <View style={styles.modalActions}>
+                <Pressable onPress={() => setShowPinModal(false)}>
+                  <ThemedText type="defaultSemiBold">Cancel</ThemedText>
+                </Pressable>
+                <Pressable onPress={handlePinSubmit}>
+                  <ThemedText type="defaultSemiBold">Submit</ThemedText>
+                </Pressable>
+              </View>
             </ThemedView>
           </View>
         </Modal>
@@ -146,7 +180,19 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
   },
-  modalMessage: {
-    fontSize: 14,
+  input: {
+    borderWidth: 1,
+    borderColor: "#C0C0C0",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  errorText: {
+    color: "#C62828",
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 8,
   },
 });

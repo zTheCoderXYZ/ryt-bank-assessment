@@ -1,3 +1,4 @@
+import { transfer } from "@/api/transfer.api";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import * as LocalAuthentication from "expo-local-authentication";
@@ -41,21 +42,43 @@ export default function PaymentStep3() {
       });
 
       if (result.success) {
-        router.dismissAll();
-        router.push("/payment/step4");
+        try {
+          const result = await transfer();
+
+          if (!result) {
+            // handle transfer failure
+            return;
+          }
+          router.dismissAll();
+          router.push("/payment/step4");
+        } catch (error) {
+          // handle transfer error
+        }
+      } else {
+        setShowPinModal(true); // fallback to password on failure/cancel
       }
     } finally {
       setIsConfirming(false);
     }
   };
 
-  const handlePinSubmit = () => {
+  const handlePinSubmit = async () => {
     if (pin === FALLBACK_PIN) {
       setPinError(null);
       setShowPinModal(false);
       setPin("");
-      router.dismissAll();
-      router.push("/payment/step4");
+      try {
+        const result = await transfer();
+
+        if (!result) {
+          // handle transfer failure
+          return;
+        }
+        router.dismissAll();
+        router.push("/payment/step4");
+      } catch (error) {
+        // handle transfer error
+      }
       return;
     }
     setPinError("Incorrect password. Please try again.");
