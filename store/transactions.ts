@@ -1,13 +1,14 @@
 import { Receiver } from "@/store/payment";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type Transaction = {
   receiver: Receiver;
   note: string;
   amount: string;
   id: string;
+  date: string;
 };
 
 type TransactionsState = {

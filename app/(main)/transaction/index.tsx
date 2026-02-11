@@ -37,6 +37,7 @@ export default function TransactionDetail() {
           Amount: RM {parseFloat(transaction.amount).toFixed(2)}
         </ThemedText>
         <ThemedText>Note: {transaction.note || "-"}</ThemedText>
+        <ThemedText>Date: {transaction.date || "-"}</ThemedText>
       </ThemedView>
 
       <Pressable

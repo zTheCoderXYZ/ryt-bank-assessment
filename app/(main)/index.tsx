@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next";
 
+import { useBalanceQuery } from "@/api/balance.api";
+import { useTransactionsQuery } from "@/api/transaction.api";
 import AvatarCircle from "@/components/avatar-circle";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -12,7 +14,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
-  const { transactions, selectTransaction } = useTransactionsStore();
+  const { selectTransaction } = useTransactionsStore();
+  const { data: transactions = [] } = useTransactionsQuery();
+  const { data: balance } = useBalanceQuery();
 
   return (
     <SafeAreaView
@@ -67,7 +71,7 @@ export default function HomeScreen() {
             lineHeight: 34,
           }}
         >
-          RM {user.balance.toFixed(2)}
+          RM {balance?.toFixed(2)}
         </ThemedText>
       </ThemedView>
 

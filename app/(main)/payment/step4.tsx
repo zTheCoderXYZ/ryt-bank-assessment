@@ -10,6 +10,7 @@ import { Pressable } from "react-native";
 export default function PaymentStep4() {
   const { transactions } = useTransactionsStore();
 
+  console.log(transactions, "debug transactions");
   return (
     <ThemedView style={sharedStyles.container}>
       <IconSymbol size={64} name="checkmark.circle.fill" color="#22C55E" />

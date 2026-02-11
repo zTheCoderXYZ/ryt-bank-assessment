@@ -1,19 +1,27 @@
+import { useBalanceQuery } from "@/api/balance.api";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { usePaymentStore } from "@/store/payment";
 import { sharedStyles } from "@/styles/index.stylesheet";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Pressable, TextInput } from "react-native";
 
 export default function PaymentStep2() {
   const { amount, setAmount, setNote } = usePaymentStore();
+  const { data: balance = 0 } = useBalanceQuery();
 
   useEffect(() => {
     setAmount("");
     setNote("");
   }, []);
+
+  const numericAmount = useMemo(() => Number.parseFloat(amount || "0"), [amount]);
+  const canProceed = useMemo(
+    () => numericAmount > 0 && numericAmount <= balance - 10,
+    [numericAmount, balance],
+  );
 
   return (
     <ThemedView style={sharedStyles.container}>
@@ -77,10 +85,12 @@ export default function PaymentStep2() {
           borderRadius: 8,
           overflow: "hidden",
           marginTop: 48,
+          opacity: canProceed ? 1 : 0.6,
         }}
         onPress={() => {
           router.push("/payment/step3");
         }}
+        disabled={!canProceed}
       >
         <LinearGradient
           colors={["#1E40AF", "#2563EB"]}

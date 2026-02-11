@@ -2,11 +2,11 @@ import { useTransferMutation } from "@/api/transfer.api";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AUTH_FALLBACK_PIN } from "@/constants/auth";
+import { usePaymentStore } from "@/store/payment";
 import * as LocalAuthentication from "expo-local-authentication";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Modal, Pressable, StyleSheet, TextInput, View } from "react-native";
-import { usePaymentStore } from "@/store/payment";
 
 export default function PaymentStep3() {
   const { amount, note, receiver, reset } = usePaymentStore();
@@ -35,8 +35,9 @@ export default function PaymentStep3() {
       });
 
       if (result.success) {
+        const currentDate = new Date().toISOString();
         await executeTransfer(
-          { receiver, amount, note },
+          { receiver, amount, note, date: currentDate },
           {
             onSuccess: () => {
               reset();
@@ -59,7 +60,7 @@ export default function PaymentStep3() {
       setShowPinModal(false);
       setPin("");
       await executeTransfer(
-        { receiver, amount, note },
+        { receiver, amount, note, date: new Date().toISOString() },
         {
           onSuccess: () => {
             reset();

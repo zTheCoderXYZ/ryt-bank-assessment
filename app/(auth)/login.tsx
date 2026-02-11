@@ -7,7 +7,6 @@ import { Modal, Pressable, TextInput, View } from "react-native";
 import { useLoginMutation } from "@/api/login.api";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { AUTH_FALLBACK_PIN } from "@/constants/auth";
 import { sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,9 +15,6 @@ export default function LoginPage() {
   const { t } = useTranslation();
   const [bioError, setBioError] = useState<string | null>(null);
   const [bioLoading, setBioLoading] = useState(false);
-  const [showPinModal, setShowPinModal] = useState(false);
-  const [pin, setPin] = useState("");
-  const [pinError, setPinError] = useState<string | null>(null);
   const { mutateAsync: executeLogin } = useLoginMutation();
 
   const handleBiometricLogin = async () => {
@@ -29,7 +25,7 @@ export default function LoginPage() {
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
       if (!hasHardware || !isEnrolled) {
-        setShowPinModal(true);
+        setBioError("Biometrics not available on this device.");
         return;
       }
 
@@ -48,33 +44,13 @@ export default function LoginPage() {
           },
         });
       } else {
-        setShowPinModal(true);
+        setBioError("Biometric authentication failed. Please login normally.");
       }
     } catch (error) {
-      setBioError("Biometric authentication failed.");
-      setShowPinModal(true);
+      setBioError("Biometric authentication failed. Please login normally.");
     } finally {
       setBioLoading(false);
     }
-  };
-
-  const handlePinSubmit = async () => {
-    if (pin === AUTH_FALLBACK_PIN) {
-      setPinError(null);
-      setShowPinModal(false);
-      setPin("");
-      await executeLogin(undefined, {
-        onSuccess: () => {
-          router.replace("/(main)");
-        },
-        onError: () => {
-          setPinError("Login failed.");
-        },
-      });
-      return;
-    }
-
-    setPinError("Incorrect password. Please try again.");
   };
 
   return (
@@ -183,31 +159,18 @@ export default function LoginPage() {
       <Modal
         animationType="fade"
         transparent
-        visible={showPinModal}
-        onRequestClose={() => setShowPinModal(false)}
+        visible={Boolean(bioError)}
+        onRequestClose={() => setBioError(null)}
       >
         <View style={sharedStyles.modalBackdrop}>
           <ThemedView style={sharedStyles.modalCard}>
             <ThemedText type="defaultSemiBold" style={sharedStyles.modalTitle}>
-              Enter Password
+              Biometric Error
             </ThemedText>
-            <TextInput
-              value={pin}
-              onChangeText={setPin}
-              placeholder="1234"
-              keyboardType="number-pad"
-              secureTextEntry
-              style={sharedStyles.input}
-            />
-            {pinError ? (
-              <ThemedText style={sharedStyles.errorText}>{pinError}</ThemedText>
-            ) : null}
+            <ThemedText style={sharedStyles.errorText}>{bioError}</ThemedText>
             <View style={sharedStyles.modalActions}>
-              <Pressable onPress={() => setShowPinModal(false)}>
+              <Pressable onPress={() => setBioError(null)}>
                 <ThemedText type="defaultSemiBold">Cancel</ThemedText>
-              </Pressable>
-              <Pressable onPress={handlePinSubmit}>
-                <ThemedText type="defaultSemiBold">Submit</ThemedText>
               </Pressable>
             </View>
           </ThemedView>

@@ -1,5 +1,6 @@
 import { useLoadingStore } from "@/store/loading";
 import { Transaction, useTransactionsStore } from "@/store/transactions";
+import { useUserStore } from "@/store/user";
 import { useMutation } from "@tanstack/react-query";
 
 export const useTransferMutation = () =>
@@ -16,6 +17,7 @@ export const useTransferMutation = () =>
             .toString()
             .padStart(6, "0");
         addTransaction({ ...transaction, id: transactionId });
+        useUserStore.getState().decrementBalance(Number(transaction.amount));
         return true;
       } finally {
         stop();
