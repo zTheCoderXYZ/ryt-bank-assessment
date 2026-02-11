@@ -1,22 +1,16 @@
-import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import * as LocalAuthentication from "expo-local-authentication";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Button,
-  Modal,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  View,
-} from "react-native";
+import { Modal, Pressable, TextInput, View } from "react-native";
 
 import { useLoginMutation } from "@/api/login.api";
-import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AUTH_FALLBACK_PIN } from "@/constants/auth";
+import { sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -84,124 +78,141 @@ export default function LoginPage() {
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView>
-        <ThemedText
-          style={{
-            fontSize: 24,
-            fontWeight: "bold",
-            marginBottom: 8,
-          }}
-        >
-          {t("login.welcome")}
-        </ThemedText>
+    <SafeAreaView style={sharedStyles.container}>
+      <ThemedText style={{ fontSize: 48, fontWeight: "bold", lineHeight: 58 }}>
+        MyBank
+      </ThemedText>
 
-        <ThemedView style={styles.bioButton}>
-          <Button
-            title={bioLoading ? "Checking..." : t("login.button")}
-            onPress={handleBiometricLogin}
-            disabled={bioLoading}
-          />
-        </ThemedView>
-        <Modal
-          animationType="fade"
-          transparent
-          visible={showPinModal}
-          onRequestClose={() => setShowPinModal(false)}
+      <ThemedText
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          marginTop: 48,
+          lineHeight: 32,
+        }}
+      >
+        Secure banking made simple
+      </ThemedText>
+
+      <TextInput
+        style={{
+          height: 40,
+          borderColor: "gray",
+          borderWidth: 1,
+          width: "80%",
+          marginTop: 48,
+          paddingHorizontal: 8,
+          borderRadius: 4,
+          backgroundColor: "#1F2933",
+          color: "white",
+        }}
+        placeholderTextColor={"white"}
+        placeholder="Username"
+      />
+      <TextInput
+        style={{
+          height: 40,
+          borderColor: "gray",
+          borderWidth: 1,
+          width: "80%",
+          marginTop: 12,
+          paddingHorizontal: 8,
+          borderRadius: 4,
+          backgroundColor: "#1F2933",
+          color: "white",
+        }}
+        placeholder="Password"
+        placeholderTextColor={"white"}
+        secureTextEntry
+      />
+
+      <ThemedView style={sharedStyles.bioButton}>
+        <Pressable
+          onPress={async () => {
+            await executeLogin(undefined, {
+              onSuccess: () => {
+                router.replace("/(main)");
+              },
+              onError: () => {
+                setBioError("Login failed.");
+              },
+            });
+          }}
+          disabled={bioLoading}
+          style={({ pressed }) => [
+            sharedStyles.gradientButton,
+            pressed && sharedStyles.gradientButtonPressed,
+            bioLoading && sharedStyles.gradientButtonDisabled,
+          ]}
         >
-          <View style={styles.modalBackdrop}>
-            <ThemedView style={styles.modalCard}>
-              <ThemedText type="defaultSemiBold" style={styles.modalTitle}>
-                Enter Password
-              </ThemedText>
-              <TextInput
-                value={pin}
-                onChangeText={setPin}
-                placeholder="1234"
-                keyboardType="number-pad"
-                secureTextEntry
-                style={styles.input}
-              />
-              {pinError ? (
-                <ThemedText style={styles.errorText}>{pinError}</ThemedText>
-              ) : null}
-              <View style={styles.modalActions}>
-                <Pressable onPress={() => setShowPinModal(false)}>
-                  <ThemedText type="defaultSemiBold">Cancel</ThemedText>
-                </Pressable>
-                <Pressable onPress={handlePinSubmit}>
-                  <ThemedText type="defaultSemiBold">Submit</ThemedText>
-                </Pressable>
-              </View>
-            </ThemedView>
-          </View>
-        </Modal>
+          <LinearGradient
+            colors={["#1E40AF", "#2563EB"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={sharedStyles.gradientFill}
+          >
+            <ThemedText style={sharedStyles.gradientButtonText}>
+              {t("login.button")}
+            </ThemedText>
+          </LinearGradient>
+        </Pressable>
       </ThemedView>
-    </ParallaxScrollView>
+
+      <ThemedView style={sharedStyles.bioButton}>
+        <Pressable
+          onPress={handleBiometricLogin}
+          disabled={bioLoading}
+          style={({ pressed }) => [
+            sharedStyles.gradientButton,
+            pressed && sharedStyles.gradientButtonPressed,
+            bioLoading && sharedStyles.gradientButtonDisabled,
+          ]}
+        >
+          <LinearGradient
+            colors={["#1E40AF", "#2563EB"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={sharedStyles.gradientFill}
+          >
+            <ThemedText style={sharedStyles.gradientButtonText}>
+              {"Login with Biometrics"}
+            </ThemedText>
+          </LinearGradient>
+        </Pressable>
+      </ThemedView>
+      <Modal
+        animationType="fade"
+        transparent
+        visible={showPinModal}
+        onRequestClose={() => setShowPinModal(false)}
+      >
+        <View style={sharedStyles.modalBackdrop}>
+          <ThemedView style={sharedStyles.modalCard}>
+            <ThemedText type="defaultSemiBold" style={sharedStyles.modalTitle}>
+              Enter Password
+            </ThemedText>
+            <TextInput
+              value={pin}
+              onChangeText={setPin}
+              placeholder="1234"
+              keyboardType="number-pad"
+              secureTextEntry
+              style={sharedStyles.input}
+            />
+            {pinError ? (
+              <ThemedText style={sharedStyles.errorText}>{pinError}</ThemedText>
+            ) : null}
+            <View style={sharedStyles.modalActions}>
+              <Pressable onPress={() => setShowPinModal(false)}>
+                <ThemedText type="defaultSemiBold">Cancel</ThemedText>
+              </Pressable>
+              <Pressable onPress={handlePinSubmit}>
+                <ThemedText type="defaultSemiBold">Submit</ThemedText>
+              </Pressable>
+            </View>
+          </ThemedView>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-  bioButton: {
-    marginTop: 12,
-  },
-  bioError: {
-    marginTop: 8,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-  },
-  modalCard: {
-    width: "100%",
-    maxWidth: 360,
-    padding: 20,
-    borderRadius: 12,
-    gap: 12,
-  },
-  modalTitle: {
-    fontSize: 18,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#C0C0C0",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  errorText: {
-    color: "#C62828",
-  },
-  modalActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 8,
-  },
-});

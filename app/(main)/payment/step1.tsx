@@ -1,3 +1,4 @@
+import AvatarCircle from "@/components/avatar-circle";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Fonts } from "@/constants/theme";
@@ -7,13 +8,13 @@ import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { usePaymentFlow } from "./_layout";
+import { usePaymentStore } from "@/store/payment";
 
 type ContactRow = { id: string; name: string; phone: string };
 type ReceiverRow = { name: string; accountNumber: string };
 
 export default function PaymentStep1() {
-  const { setReceiver } = usePaymentFlow();
+  const { setReceiver } = usePaymentStore();
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"all" | "contacts">("all");
   const [contacts, setContacts] = useState<ContactRow[]>([]);
@@ -62,104 +63,142 @@ export default function PaymentStep1() {
   }, [activeTab, contacts.length, allReceivers.length]);
 
   return (
-    <FlatList
-      data={pagedData}
-      keyExtractor={(item) =>
-        isContacts
-          ? (item as ContactRow).id
-          : (item as ReceiverRow).accountNumber
-      }
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
-      onEndReachedThreshold={0.3}
-      onEndReached={() => {
-        if (page < totalPages) {
-          setPage((prev) => prev + 1);
+    <ThemedView style={styles.container}>
+      <ThemedText
+        type="title"
+        style={{
+          fontFamily: Fonts.rounded,
+          fontSize: 20,
+        }}
+      >
+        {t("payment.selectPerson")}
+      </ThemedText>
+
+      <View style={styles.tabRow}>
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            activeTab === "all" && styles.tabButtonActive,
+          ]}
+          onPress={() => setActiveTab("all")}
+        >
+          <ThemedText type="defaultSemiBold">All</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            activeTab === "contacts" && styles.tabButtonActive,
+          ]}
+          onPress={() => setActiveTab("contacts")}
+        >
+          <ThemedText type="defaultSemiBold">Contacts</ThemedText>
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        style={{ marginTop: 12, width: "80%" }}
+        data={pagedData}
+        keyExtractor={(item) =>
+          isContacts
+            ? (item as ContactRow).id
+            : (item as ReceiverRow).accountNumber
         }
-      }}
-      ListHeaderComponent={
-        <ThemedView style={{ margin: 16, padding: 16 }}>
-          <ThemedView style={styles.titleContainer}>
-            <ThemedText
-              type="title"
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        onEndReachedThreshold={0.3}
+        onEndReached={() => {
+          if (page < totalPages) {
+            setPage((prev) => prev + 1);
+          }
+        }}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() => {
+              const receiver = isContacts
+                ? {
+                    name: (item as ContactRow).name,
+                    accountNumber: (item as ContactRow).phone,
+                  }
+                : (item as ReceiverRow);
+
+              setReceiver(receiver);
+              router.push("/payment/step2");
+            }}
+          >
+            {/* <ThemedView style={styles.receiverRow}>
+              <ThemedText type="defaultSemiBold">
+                {(item as ContactRow | ReceiverRow).name}
+              </ThemedText>
+              <ThemedText type="default">
+                {isContacts
+                  ? (item as ContactRow).phone
+                  : (item as ReceiverRow).accountNumber}
+              </ThemedText>
+            </ThemedView> */}
+            <ThemedView
               style={{
-                fontFamily: Fonts.rounded,
+                backgroundColor: "#111827",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                padding: 8,
+                borderRadius: 4,
+                gap: 20,
+                width: "100%",
               }}
             >
-              {t("payment.selectPerson")}
-            </ThemedText>
-          </ThemedView>
+              <AvatarCircle
+                name={(item as ContactRow | ReceiverRow).name}
+                size={40}
+              />
 
-          <View style={styles.tabRow}>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === "all" && styles.tabButtonActive,
-              ]}
-              onPress={() => setActiveTab("all")}
-            >
-              <ThemedText type="defaultSemiBold">All</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === "contacts" && styles.tabButtonActive,
-              ]}
-              onPress={() => setActiveTab("contacts")}
-            >
-              <ThemedText type="defaultSemiBold">Contacts</ThemedText>
-            </TouchableOpacity>
-          </View>
-        </ThemedView>
-      }
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          onPress={() => {
-            const receiver = isContacts
-              ? {
-                  name: (item as ContactRow).name,
-                  accountNumber: (item as ContactRow).phone,
-                }
-              : (item as ReceiverRow);
-
-            setReceiver(receiver);
-            router.push("/payment/step2");
-          }}
-        >
-          <ThemedView style={styles.receiverRow}>
-            <ThemedText type="defaultSemiBold">
-              {(item as ContactRow | ReceiverRow).name}
-            </ThemedText>
-            <ThemedText type="default">
-              {isContacts
-                ? (item as ContactRow).phone
-                : (item as ReceiverRow).accountNumber}
-            </ThemedText>
-          </ThemedView>
-        </TouchableOpacity>
-      )}
-    />
+              <ThemedView
+                style={{
+                  flexDirection: "column",
+                  backgroundColor: "#111827",
+                }}
+              >
+                <ThemedText type="defaultSemiBold">
+                  {isContacts
+                    ? (item as ContactRow).phone
+                    : (item as ReceiverRow).accountNumber}
+                </ThemedText>
+                <ThemedText>
+                  {(item as ContactRow | ReceiverRow).name}
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+          </TouchableOpacity>
+        )}
+      />
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
+  container: {
+    flex: 1,
+    justifyContent: "flex-start",
+    paddingVertical: 12,
+    backgroundColor: "#0F172A",
+    alignItems: "center",
   },
+  titleContainer: {},
   tabRow: {
+    width: "80%",
+    backgroundColor: "#020617",
     flexDirection: "row",
     marginTop: 12,
+    borderRadius: 4,
     gap: 8,
   },
   tabButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "#C0C0C0",
+    borderRadius: 4,
+    width: "50%",
+    alignItems: "center",
   },
   tabButtonActive: {
-    backgroundColor: "#E6E6E6",
+    backgroundColor: "#1D4ED8",
   },
   receiverRow: {
     paddingVertical: 12,

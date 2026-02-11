@@ -5,18 +5,11 @@ import { AUTH_FALLBACK_PIN } from "@/constants/auth";
 import * as LocalAuthentication from "expo-local-authentication";
 import { router } from "expo-router";
 import { useState } from "react";
-import {
-  Button,
-  Modal,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  View,
-} from "react-native";
-import { usePaymentFlow } from "./_layout";
+import { Modal, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { usePaymentStore } from "@/store/payment";
 
 export default function PaymentStep3() {
-  const { amount, note, receiver, reset } = usePaymentFlow();
+  const { amount, note, receiver, reset } = usePaymentStore();
   const [isConfirming, setIsConfirming] = useState(false);
   const { mutateAsync: executeTransfer } = useTransferMutation();
 
@@ -82,18 +75,57 @@ export default function PaymentStep3() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText>Confirm Payment Details</ThemedText>
-      <ThemedText>
-        Receiver: {receiver?.name} ({receiver?.accountNumber})
+      <ThemedText
+        style={{
+          backgroundColor: "#1F2933",
+          padding: 12,
+          borderRadius: 8,
+          marginBottom: 16,
+          width: "80%",
+        }}
+      >
+        Receiver: {receiver.name} ({receiver.accountNumber})
       </ThemedText>
-      <ThemedText>Amount: {amount}</ThemedText>
-      <ThemedText>Note: {note}</ThemedText>
-      <Button
-        title={isConfirming ? "Confirming..." : "Confirm Payment"}
+      <ThemedText
+        style={{
+          backgroundColor: "#1F2933",
+          padding: 12,
+          borderRadius: 8,
+          marginBottom: 16,
+          width: "80%",
+        }}
+      >
+        Amount: {amount}
+      </ThemedText>
+      <ThemedText
+        style={{
+          backgroundColor: "#1F2933",
+          padding: 12,
+          borderRadius: 8,
+          marginBottom: 16,
+          width: "80%",
+        }}
+      >
+        Note: {note}
+      </ThemedText>
+      <Pressable
+        style={{
+          backgroundColor: "green",
+          padding: 12,
+          borderRadius: 8,
+          width: "80%",
+          alignItems: "center",
+          marginTop: 36,
+        }}
         onPress={handleConfirm}
         disabled={isConfirming}
-      />
-
+      >
+        <ThemedText
+          style={{ color: "white", fontWeight: "bold", fontSize: 18 }}
+        >
+          {isConfirming ? "Confirming..." : "Confirm Payment"}
+        </ThemedText>
+      </Pressable>
       <Modal
         animationType="fade"
         transparent
@@ -134,8 +166,10 @@ export default function PaymentStep3() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    gap: 16,
+    justifyContent: "flex-start",
+    paddingVertical: 12,
+    backgroundColor: "#0F172A",
+    alignItems: "center",
   },
   modalBackdrop: {
     flex: 1,

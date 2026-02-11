@@ -1,100 +1,153 @@
-import { Image } from "expo-image";
 import { useTranslation } from "react-i18next";
-import { Button, StyleSheet } from "react-native";
 
-import { useLogoutMutation } from "@/api/logout.api";
-import ParallaxScrollView from "@/components/parallax-scroll-view";
+import AvatarCircle from "@/components/avatar-circle";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { user } from "@/constants/user";
 import { useTransactionsStore } from "@/store/transactions";
+import { sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
+import { ScrollView, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
-  const { mutateAsync: executeLogout } = useLogoutMutation();
-  const { transactions } = useTransactionsStore();
+  const { transactions, selectTransaction } = useTransactionsStore();
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
+    <SafeAreaView
+      style={sharedStyles.container}
+      edges={["top", "left", "right"]}
     >
-      <ThemedView>
+      <ThemedText
+        style={{
+          fontSize: 36,
+          lineHeight: 42,
+          fontWeight: "bold",
+          marginBottom: 8,
+        }}
+      >
+        {t("home.welcome")} {user.name}
+      </ThemedText>
+      <ThemedText
+        style={{
+          fontSize: 20,
+          marginBottom: 24,
+        }}
+      >
+        {new Date().toLocaleDateString(undefined, {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+        })}
+      </ThemedText>
+
+      <ThemedView
+        style={{
+          backgroundColor: "#1D4ED8",
+          padding: 16,
+          borderRadius: 8,
+          marginBottom: 24,
+          width: "80%",
+        }}
+      >
         <ThemedText
           style={{
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: "bold",
             marginBottom: 8,
           }}
         >
-          {t("home.welcome")} {user.name}
+          Available Balance
         </ThemedText>
         <ThemedText
           style={{
-            fontSize: 20,
-            marginBottom: 24,
+            fontSize: 28,
+            fontWeight: "bold",
+            lineHeight: 34,
           }}
         >
-          {t("home.balance")}: RM{user.balance.toFixed(2)}
+          RM {user.balance.toFixed(2)}
         </ThemedText>
+      </ThemedView>
 
-        <ThemedView style={styles.stepContainer}>
-          <ThemedText
-            style={{ fontSize: 20, fontWeight: "bold", marginBottom: 8 }}
-          >
-            {t("home.recentTransactions")}
+      <ThemedView style={sharedStyles.stepContainer}>
+        <ThemedText
+          style={{ fontSize: 20, fontWeight: "bold", marginBottom: 8 }}
+        >
+          {t("home.recentTransactions")}
+        </ThemedText>
+        {transactions.length === 0 ? (
+          <ThemedText style={{ marginVertical: "auto" }}>
+            {t("home.noTransactions")}
           </ThemedText>
-          {transactions.length === 0 ? (
-            <ThemedText>{t("home.noTransactions")}</ThemedText>
-          ) : (
-            transactions
+        ) : (
+          <ScrollView
+            style={{ maxHeight: 260 }}
+            contentContainerStyle={{ gap: 8 }}
+            showsVerticalScrollIndicator={false}
+          >
+            {transactions
               .slice(-5)
               .reverse()
               .map((tx) => (
-                <ThemedView key={tx.id} style={{ marginBottom: 8 }}>
-                  <ThemedText>
-                    {tx.receiver?.name} - RM{tx.amount} ({tx.note})
-                  </ThemedText>
-                </ThemedView>
-              ))
-          )}
-        </ThemedView>
-        <Button
-          title={t("logout.button")}
-          onPress={async () => {
-            await executeLogout(undefined, {
-              onSuccess: () => {
-                router.replace("/(auth)/login");
-              },
-            });
-          }}
-        />
+                <TouchableOpacity
+                  key={tx.id}
+                  onPress={() => {
+                    selectTransaction(tx.id);
+                    router.push("/transaction");
+                  }}
+                >
+                  <ThemedView
+                    style={{
+                      backgroundColor: "#111827",
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                      padding: 8,
+                      borderRadius: 4,
+                      gap: 20,
+                      width: "100%",
+                    }}
+                  >
+                    <AvatarCircle name={tx.receiver?.name ?? "?"} size={40} />
+
+                    <ThemedView
+                      style={{
+                        flexDirection: "column",
+                        backgroundColor: "#111827",
+                      }}
+                    >
+                      <ThemedText type="defaultSemiBold">
+                        {tx.receiver?.accountNumber}
+                      </ThemedText>
+                      <ThemedText>{tx.receiver?.name}</ThemedText>
+                    </ThemedView>
+                    <ThemedText
+                      style={{
+                        color: "red",
+                        marginLeft: "auto",
+                        fontWeight: "bold",
+                        marginVertical: "auto",
+                      }}
+                    >
+                      - RM{parseFloat(tx.amount).toFixed(2)}
+                    </ThemedText>
+                  </ThemedView>
+                </TouchableOpacity>
+              ))}
+          </ScrollView>
+        )}
       </ThemedView>
-    </ParallaxScrollView>
+      {/* <Button
+        title={t("logout.button")}
+        onPress={async () => {
+          await executeLogout(undefined, {
+            onSuccess: () => {
+              router.replace("/(auth)/login");
+            },
+          });
+        }}
+      /> */}
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-});
