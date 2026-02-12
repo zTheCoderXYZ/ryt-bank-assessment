@@ -22,3 +22,7 @@ The app is built with Expo to leverage native-friendly capabilities such as biom
 4. Scan the QR code shown in the terminal:
    - iOS: Scan using the Camera app.
    - Android: Scan using the Expo Go app.
+
+Note: When using Expo Go, biometrics like face and touch id will not be available on iOS. For that to be enabled. Run the project on Macbook and connect via cable with phone. Then use the command yarn ios.
+
+Link to Demo Video: https://drive.google.com/file/d/1QLT-BkZ-zZk7wGNnXx5MTR5RPHCt9le9/view?usp=sharing
