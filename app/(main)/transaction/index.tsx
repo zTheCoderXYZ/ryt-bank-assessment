@@ -1,15 +1,17 @@
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { Button } from "@/components/ui/button";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { usePaymentStore } from "@/store/payment";
 import { useTransactionsStore } from "@/store/transactions";
-import { sharedStyles } from "@/styles/index.stylesheet";
+import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { StyleSheet } from "react-native";
+import { Text, View } from "react-native";
 
 export default function TransactionDetail() {
   const { t, i18n } = useTranslation();
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
+  const defaultTextColor = { color: palette.text };
   const { transactions, selectedTransactionId } = useTransactionsStore();
   const { setReceiver, setAmount, setNote } = usePaymentStore();
 
@@ -17,51 +19,57 @@ export default function TransactionDetail() {
 
   if (!transaction) {
     return (
-      <ThemedView style={sharedStyles.container}>
-        <ThemedText>{t("transaction.noSelected")}</ThemedText>
+      <View
+        style={[sharedStyles.container, { backgroundColor: palette.screen }]}
+      >
+        <Text style={defaultTextColor}>{t("transaction.noSelected")}</Text>
         <Button
           label={t("common.goBack")}
           onPress={() => router.back()}
-          style={styles.button}
-          textStyle={styles.buttonText}
+          style={sharedStyles.transactionButton}
+          textStyle={sharedStyles.transactionButtonText}
         />
-      </ThemedView>
+      </View>
     );
   }
 
   return (
-    <ThemedView style={sharedStyles.container}>
-      <ThemedText style={styles.title}>{t("transaction.title")}</ThemedText>
+    <View
+      style={[sharedStyles.container, { backgroundColor: palette.screen }]}
+    >
+      <Text style={[defaultTextColor, sharedStyles.transactionTitle]}>
+        {t("transaction.title")}
+      </Text>
 
-      <ThemedView style={styles.card}>
-        <ThemedText>
+      <View style={[sharedStyles.transactionCard, { backgroundColor: palette.surface }]}>
+        <Text style={defaultTextColor}>
           {t("payment.transactionIdLabel")}: {transaction.id}
-        </ThemedText>
-        <ThemedText>
+        </Text>
+        <Text style={defaultTextColor}>
           {t("payment.receiverLabel")}: {transaction.receiver.name} (
           {transaction.receiver.accountNumber})
-        </ThemedText>
-        <ThemedText>
+        </Text>
+        <Text style={defaultTextColor}>
           {t("payment.amountLabel")}: RM {parseFloat(transaction.amount).toFixed(2)}
-        </ThemedText>
-        <ThemedText>{t("payment.noteLabel")}: {transaction.note || "-"}</ThemedText>
-        <ThemedText>
+        </Text>
+        <Text style={defaultTextColor}>{t("payment.noteLabel")}: {transaction.note || "-"}</Text>
+        <Text style={defaultTextColor}>
           {t("transaction.dateLabel")}: {formatDateTime(transaction.date, i18n.language)}
-        </ThemedText>
-      </ThemedView>
+        </Text>
+      </View>
 
       <Button
         label={t("transaction.repeatTransfer")}
-        style={styles.button}
+        style={sharedStyles.transactionButton}
         onPress={() => {
           setReceiver(transaction.receiver);
           setAmount(transaction.amount);
           setNote(transaction.note);
           router.push("/payment/step3");
         }}
-        textStyle={styles.buttonText}
+        textStyle={sharedStyles.transactionButtonText}
       />
-    </ThemedView>
+    </View>
   );
 }
 
@@ -78,31 +86,3 @@ function formatDateTime(value?: string, locale = "en") {
     hour12: true,
   });
 }
-
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  card: {
-    width: "80%",
-    backgroundColor: "#111827",
-    padding: 16,
-    borderRadius: 8,
-    gap: 8,
-  },
-  button: {
-    marginTop: 24,
-    backgroundColor: "#2563EB",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    width: "80%",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "600",
-  },
-});

@@ -1,25 +1,17 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import "@/i18n";
+import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import { router, Tabs, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import "react-native-reanimated";
-
-import { HapticTab } from "@/components/haptic-tab";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
-import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import "@/i18n";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
   const { t } = useTranslation();
   const pathname = usePathname();
 
@@ -33,80 +25,75 @@ export default function RootLayout() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Tabs
-          screenOptions={{
-            tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-            headerShown: !hideHeader,
-            header: () => (hideHeader ? null : <MainHeader />),
-            tabBarButton: HapticTab,
-            tabBarItemStyle: { marginTop: 8 },
-            tabBarStyle: hideTabBar
-              ? { display: "none" }
-              : {
-                  backgroundColor: "#0F172A",
-                },
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: palette.primary,
+          headerShown: !hideHeader,
+          header: () => (hideHeader ? null : <MainHeader />),
+          tabBarItemStyle: { marginTop: 8 },
+          tabBarStyle: hideTabBar
+            ? { display: "none" }
+            : {
+                backgroundColor: palette.screen,
+                borderTopColor: palette.border,
+              },
+        }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: t("home.title"),
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={28} name="house.fill" color={color} />
+            ),
           }}
-        >
-          <Tabs.Screen
-            name="index"
-            options={{
-              title: t("home.title"),
-              tabBarIcon: ({ color }) => (
-                <IconSymbol size={28} name="house.fill" color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="payment"
-            options={{
-              title: t("payment.title"),
-              tabBarIcon: ({ color }) => (
-                <IconSymbol size={28} name="paperplane.fill" color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen name="settings/index" options={{ href: null }} />
-          <Tabs.Screen name="transaction/index" options={{ href: null }} />
-        </Tabs>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+        />
+        <Tabs.Screen
+          name="payment"
+          options={{
+            title: t("payment.title"),
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={28} name="paperplane.fill" color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen name="settings/index" options={{ href: null }} />
+        <Tabs.Screen name="transaction/index" options={{ href: null }} />
+      </Tabs>
+      <StatusBar style="auto" />
     </SafeAreaView>
   );
 }
 
 function MainHeader() {
   const { t } = useTranslation();
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
   return (
-    <ThemedView style={styles.headerContainer}>
-      <ThemedText type="defaultSemiBold" style={styles.headerTitle}>
+    <View
+      style={[
+        sharedStyles.mainLayoutHeaderContainer,
+        {
+          backgroundColor: palette.screen,
+          borderColor: palette.border,
+        },
+      ]}
+    >
+      <Text
+        style={[sharedStyles.mainLayoutHeaderTitle, { color: palette.text }]}
+      >
         {t("app.name")}
-      </ThemedText>
+      </Text>
       <TouchableOpacity
-        style={styles.headerButton}
+        style={sharedStyles.mainLayoutHeaderButton}
         onPress={() => router.push("/settings")}
       >
-        <IconSymbol size={22} name="gearshape.fill" color="#6B7280" />
+        <IconSymbol
+          size={22}
+          name="gearshape.fill"
+          color={palette.iconOnHeader}
+        />
       </TouchableOpacity>
-    </ThemedView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#0F172A",
-    borderBottomWidth: 0.5,
-    borderColor: "#1E293B",
-  },
-  headerTitle: {
-    fontSize: 18,
-  },
-  headerButton: {
-    padding: 6,
-  },
-});

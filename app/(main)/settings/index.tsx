@@ -1,56 +1,70 @@
 import { useLogoutMutation } from "@/api/logout.api";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { Button } from "@/components/ui/button";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useSettingsStore } from "@/store/settings";
-import { sharedStyles } from "@/styles/index.stylesheet";
+import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { changeLanguage } from "i18next";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function SettingsPage() {
   const { t } = useTranslation();
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
+  const defaultTextColor = { color: palette.text };
   const { language, setLanguage, theme, setTheme } = useSettingsStore();
   const { mutateAsync: executeLogout } = useLogoutMutation();
   return (
-    <ThemedView style={sharedStyles.container}>
-      <ThemedView
+    <View style={[sharedStyles.container, { backgroundColor: palette.screen }]}>
+      <View
         style={{
           flexDirection: "row",
-          backgroundColor: "#0F172A",
+          backgroundColor: palette.screen,
           alignItems: "center",
           paddingVertical: 10,
           borderBottomWidth: 1,
-          borderBottomColor: "#1E293B",
+          borderBottomColor: palette.border,
           width: "100%",
-          maxWidth: 600,
         }}
       >
-        <View style={styles.headerContainer}>
+        <View style={sharedStyles.settingsHeaderContainer}>
           <Button
             onPress={() => router.back()}
-            style={styles.backButton}
-            icon={<MaterialIcons name="arrow-back-ios" size={24} color="#E2E8F0" />}
+            style={sharedStyles.settingsBackButton}
+            icon={
+              <MaterialIcons
+                name="arrow-back-ios"
+                size={24}
+                color={palette.iconOnHeader}
+              />
+            }
           />
 
-          <View style={styles.rightSpacer} />
+          <View style={sharedStyles.settingsRightSpacer} />
         </View>
-        <ThemedText style={styles.headerTitle}>
+        <Text style={[defaultTextColor, sharedStyles.settingsHeaderTitle]}>
           {t("settings.title")}
-        </ThemedText>
-      </ThemedView>
+        </Text>
+      </View>
 
-      <ThemedText style={{ marginTop: 20, fontSize: 16 }}>
+      <Text
+        style={[
+          defaultTextColor,
+          { marginTop: 20, fontSize: 16, fontWeight: "700" },
+        ]}
+      >
         {t("settings.language")}
-      </ThemedText>
+      </Text>
       <Button
         label={t("settings.english")}
         style={[
-          styles.optionButton,
-          language === "en" && styles.optionButtonActive,
+          sharedStyles.settingsOptionButton,
+          { backgroundColor: palette.surfaceElevated },
+          language === "en" && sharedStyles.settingsOptionButtonActive,
         ]}
+        textStyle={{ fontWeight: "500" }}
         onPress={() => {
           setLanguage("en");
           changeLanguage("en");
@@ -59,31 +73,42 @@ export default function SettingsPage() {
       <Button
         label={t("settings.malay")}
         style={[
-          styles.optionButton,
-          language === "bm" && styles.optionButtonActive,
+          sharedStyles.settingsOptionButton,
+          { backgroundColor: palette.surfaceElevated },
+          language === "bm" && sharedStyles.settingsOptionButtonActive,
         ]}
+        textStyle={{ fontWeight: "500" }}
         onPress={() => {
           setLanguage("bm");
           changeLanguage("bm");
         }}
       />
-      <ThemedText style={{ marginTop: 20, fontSize: 16 }}>
+      <Text
+        style={[
+          defaultTextColor,
+          { marginTop: 20, fontSize: 16, fontWeight: "700" },
+        ]}
+      >
         {t("settings.theme")}
-      </ThemedText>
+      </Text>
       <Button
         label={t("settings.light")}
         style={[
-          styles.optionButton,
-          theme === "light" && styles.optionButtonActive,
+          sharedStyles.settingsOptionButton,
+          { backgroundColor: palette.surfaceElevated },
+          theme === "light" && sharedStyles.settingsOptionButtonActive,
         ]}
+        textStyle={{ fontWeight: "500" }}
         onPress={() => setTheme("light")}
       />
       <Button
         label={t("settings.dark")}
         style={[
-          styles.optionButton,
-          theme === "dark" && styles.optionButtonActive,
+          sharedStyles.settingsOptionButton,
+          { backgroundColor: palette.surfaceElevated },
+          theme === "dark" && sharedStyles.settingsOptionButtonActive,
         ]}
+        textStyle={{ fontWeight: "500" }}
         onPress={() => setTheme("dark")}
       />
 
@@ -107,40 +132,6 @@ export default function SettingsPage() {
         }}
         textStyle={sharedStyles.gradientButtonText}
       />
-    </ThemedView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    height: "100%",
-    justifyContent: "center",
-    paddingHorizontal: 12,
-    backgroundColor: "#0F172A",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  backButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    alignSelf: "flex-start",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    flex: 1,
-  },
-  rightSpacer: {
-    width: 32,
-  },
-  optionButton: {
-    width: "80%",
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: "#1F2933",
-    borderRadius: 8,
-  },
-  optionButtonActive: {
-    backgroundColor: "#2563EB",
-  },
-});

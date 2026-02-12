@@ -1,17 +1,20 @@
 import { useTransferMutation } from "@/api/transfer.api";
 import { Button } from "@/components/ui/button";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import { AUTH_FALLBACK_PIN } from "@/constants/auth";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { usePaymentStore } from "@/store/payment";
 import * as LocalAuthentication from "expo-local-authentication";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Modal, StyleSheet, TextInput, View } from "react-native";
+import { Modal, Text, TextInput, View } from "react-native";
 
 export default function PaymentStep3() {
   const { t } = useTranslation();
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
+  const defaultTextColor = { color: palette.text };
   const { amount, note, receiver, reset } = usePaymentStore();
   const [isConfirming, setIsConfirming] = useState(false);
   const { mutateAsync: executeTransfer } = useTransferMutation();
@@ -78,10 +81,13 @@ export default function PaymentStep3() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText
+    <View
+      style={[sharedStyles.paymentStep3Container, { backgroundColor: palette.screen }]}
+    >
+      <Text
         style={{
-          backgroundColor: "#1F2933",
+          ...defaultTextColor,
+          backgroundColor: palette.surfaceElevated,
           padding: 12,
           borderRadius: 8,
           marginBottom: 16,
@@ -89,10 +95,11 @@ export default function PaymentStep3() {
         }}
       >
         {t("payment.receiverLabel")}: {receiver.name} ({receiver.accountNumber})
-      </ThemedText>
-      <ThemedText
+      </Text>
+      <Text
         style={{
-          backgroundColor: "#1F2933",
+          ...defaultTextColor,
+          backgroundColor: palette.surfaceElevated,
           padding: 12,
           borderRadius: 8,
           marginBottom: 16,
@@ -100,10 +107,11 @@ export default function PaymentStep3() {
         }}
       >
         {t("payment.amountLabel")}: {amount}
-      </ThemedText>
-      <ThemedText
+      </Text>
+      <Text
         style={{
-          backgroundColor: "#1F2933",
+          ...defaultTextColor,
+          backgroundColor: palette.surfaceElevated,
           padding: 12,
           borderRadius: 8,
           marginBottom: 16,
@@ -111,13 +119,13 @@ export default function PaymentStep3() {
         }}
       >
         {t("payment.noteLabel")}: {note}
-      </ThemedText>
+      </Text>
       <Button
         label={
           isConfirming ? t("payment.confirming") : t("payment.confirmPayment")
         }
         style={{
-          backgroundColor: "green",
+          backgroundColor: palette.primary,
           padding: 12,
           borderRadius: 8,
           width: "80%",
@@ -134,80 +142,46 @@ export default function PaymentStep3() {
         visible={showPinModal}
         onRequestClose={() => setShowPinModal(false)}
       >
-        <View style={styles.modalBackdrop}>
-          <ThemedView style={styles.modalCard}>
-            <ThemedText type="defaultSemiBold" style={styles.modalTitle}>
+        <View style={sharedStyles.modalBackdrop}>
+          <View style={sharedStyles.modalCard}>
+            <Text
+              style={[
+                defaultTextColor,
+                sharedStyles.modalTitle,
+                sharedStyles.paymentStep3SemiBoldText,
+              ]}
+            >
               {t("payment.enterPassword")}
-            </ThemedText>
+            </Text>
             <TextInput
               value={pin}
               onChangeText={setPin}
               placeholder={t("payment.passwordPlaceholder")}
               keyboardType="number-pad"
               secureTextEntry
-              style={styles.input}
+              style={[
+                sharedStyles.input,
+                { color: colorScheme === "dark" ? "white" : "#0F172A" },
+              ]}
             />
             {pinError ? (
-              <ThemedText style={styles.errorText}>{pinError}</ThemedText>
+              <Text style={sharedStyles.errorText}>{pinError}</Text>
             ) : null}
-            <View style={styles.modalActions}>
+            <View style={sharedStyles.modalActions}>
               <Button
                 label={t("common.cancel")}
-                textType="defaultSemiBold"
+                textStyle={{ fontWeight: "600" }}
                 onPress={() => setShowPinModal(false)}
               />
               <Button
                 label={t("common.submit")}
-                textType="defaultSemiBold"
+                textStyle={{ fontWeight: "600" }}
                 onPress={handlePinSubmit}
               />
             </View>
-          </ThemedView>
+          </View>
         </View>
       </Modal>
-    </ThemedView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
-    paddingVertical: 12,
-    backgroundColor: "#0F172A",
-    alignItems: "center",
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-  },
-  modalCard: {
-    width: "100%",
-    maxWidth: 360,
-    padding: 20,
-    borderRadius: 12,
-    gap: 12,
-  },
-  modalTitle: {
-    fontSize: 18,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#C0C0C0",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    color: "white",
-  },
-  errorText: {
-    color: "#C62828",
-  },
-  modalActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 8,
-  },
-});

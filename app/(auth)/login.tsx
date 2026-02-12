@@ -1,18 +1,20 @@
 import * as LocalAuthentication from "expo-local-authentication";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Modal, TextInput, View } from "react-native";
+import { Modal, Text, TextInput, View } from "react-native";
 
 import { useLoginMutation } from "@/api/login.api";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { Button } from "@/components/ui/button";
-import { sharedStyles } from "@/styles/index.stylesheet";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginPage() {
   const { t } = useTranslation();
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
+  const defaultTextColor = { color: palette.text };
   const [bioError, setBioError] = useState<string | null>(null);
   const [bioLoading, setBioLoading] = useState(false);
   const { mutateAsync: executeLogin } = useLoginMutation();
@@ -54,13 +56,21 @@ export default function LoginPage() {
   };
 
   return (
-    <SafeAreaView style={sharedStyles.container}>
-      <ThemedText style={{ fontSize: 48, fontWeight: "bold", lineHeight: 58 }}>
+    <SafeAreaView
+      style={[sharedStyles.container, { backgroundColor: palette.screen }]}
+    >
+      <Text
+        style={[
+          defaultTextColor,
+          { fontSize: 48, fontWeight: "bold", lineHeight: 58 },
+        ]}
+      >
         {t("app.name")}
-      </ThemedText>
+      </Text>
 
-      <ThemedText
+      <Text
         style={{
+          ...defaultTextColor,
           fontSize: 24,
           fontWeight: "bold",
           marginTop: 48,
@@ -70,7 +80,7 @@ export default function LoginPage() {
         }}
       >
         {t("login.tagline")}
-      </ThemedText>
+      </Text>
 
       <TextInput
         style={{
@@ -81,10 +91,10 @@ export default function LoginPage() {
           marginTop: 48,
           paddingHorizontal: 8,
           borderRadius: 4,
-          backgroundColor: "#1F2933",
-          color: "white",
+          backgroundColor: palette.surfaceElevated,
+          color: colorScheme === "dark" ? "white" : "#0F172A",
         }}
-        placeholderTextColor={"white"}
+        placeholderTextColor={colorScheme === "dark" ? "white" : "#475569"}
         placeholder={t("login.usernamePlaceholder")}
       />
       <TextInput
@@ -96,15 +106,15 @@ export default function LoginPage() {
           marginTop: 12,
           paddingHorizontal: 8,
           borderRadius: 4,
-          backgroundColor: "#1F2933",
-          color: "white",
+          backgroundColor: palette.surfaceElevated,
+          color: colorScheme === "dark" ? "white" : "#0F172A",
         }}
         placeholder={t("login.passwordPlaceholder")}
-        placeholderTextColor={"white"}
+        placeholderTextColor={colorScheme === "dark" ? "white" : "#475569"}
         secureTextEntry
       />
 
-      <ThemedView style={sharedStyles.bioButton}>
+      <View style={sharedStyles.bioButton}>
         <Button
           label={t("login.button")}
           onPress={async () => {
@@ -118,28 +128,32 @@ export default function LoginPage() {
             });
           }}
           disabled={bioLoading}
-          style={sharedStyles.gradientButton}
+          style={[
+            sharedStyles.gradientButton,
+            sharedStyles.gradientFill,
+            { backgroundColor: palette.primary },
+          ]}
           pressedStyle={sharedStyles.gradientButtonPressed}
           disabledStyle={sharedStyles.gradientButtonDisabled}
-          gradient
-          contentStyle={sharedStyles.gradientFill}
           textStyle={sharedStyles.gradientButtonText}
         />
-      </ThemedView>
+      </View>
 
-      <ThemedView style={sharedStyles.bioButton}>
+      <View style={sharedStyles.bioButton}>
         <Button
           label={t("login.biometrics.button")}
           onPress={handleBiometricLogin}
           disabled={bioLoading}
-          style={sharedStyles.gradientButton}
+          style={[
+            sharedStyles.gradientButton,
+            sharedStyles.gradientFill,
+            { backgroundColor: palette.primary },
+          ]}
           pressedStyle={sharedStyles.gradientButtonPressed}
           disabledStyle={sharedStyles.gradientButtonDisabled}
-          gradient
-          contentStyle={sharedStyles.gradientFill}
           textStyle={sharedStyles.gradientButtonText}
         />
-      </ThemedView>
+      </View>
       <Modal
         animationType="fade"
         transparent
@@ -147,19 +161,25 @@ export default function LoginPage() {
         onRequestClose={() => setBioError(null)}
       >
         <View style={sharedStyles.modalBackdrop}>
-          <ThemedView style={sharedStyles.modalCard}>
-            <ThemedText type="defaultSemiBold" style={sharedStyles.modalTitle}>
+          <View style={sharedStyles.modalCard}>
+            <Text
+              style={[
+                defaultTextColor,
+                sharedStyles.modalTitle,
+                { fontWeight: "600" },
+              ]}
+            >
               {t("login.biometrics.errorTitle")}
-            </ThemedText>
-            <ThemedText style={sharedStyles.errorText}>{bioError}</ThemedText>
+            </Text>
+            <Text style={sharedStyles.errorText}>{bioError}</Text>
             <View style={sharedStyles.modalActions}>
               <Button
                 label={t("common.cancel")}
-                textType="defaultSemiBold"
+                textStyle={{ fontWeight: "600" }}
                 onPress={() => setBioError(null)}
               />
             </View>
-          </ThemedView>
+          </View>
         </View>
       </Modal>
     </SafeAreaView>

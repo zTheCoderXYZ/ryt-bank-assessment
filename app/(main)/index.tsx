@@ -3,28 +3,31 @@ import { useTranslation } from "react-i18next";
 import { useBalanceQuery } from "@/api/balance.api";
 import { useTransactionsQuery } from "@/api/transaction.api";
 import AvatarCircle from "@/components/avatar-circle";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { user } from "@/constants/user";
 import { useTransactionsStore } from "@/store/transactions";
-import { sharedStyles } from "@/styles/index.stylesheet";
+import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
+  const defaultTextColor = { color: palette.text };
   const { selectTransaction } = useTransactionsStore();
   const { data: transactions = [] } = useTransactionsQuery();
   const { data: balance } = useBalanceQuery();
 
   return (
     <SafeAreaView
-      style={sharedStyles.container}
+      style={[sharedStyles.container, { backgroundColor: palette.screen }]}
       edges={["top", "left", "right"]}
     >
-      <ThemedText
+      <Text
         style={{
+          ...defaultTextColor,
           fontSize: 36,
           lineHeight: 42,
           fontWeight: "bold",
@@ -33,9 +36,10 @@ export default function HomeScreen() {
         }}
       >
         {t("home.welcome")} {user.name}
-      </ThemedText>
-      <ThemedText
+      </Text>
+      <Text
         style={{
+          ...defaultTextColor,
           fontSize: 20,
           marginBottom: 24,
         }}
@@ -45,47 +49,51 @@ export default function HomeScreen() {
           month: "long",
           day: "numeric",
         })}
-      </ThemedText>
+      </Text>
 
-      <ThemedView
+      <View
         style={{
-          backgroundColor: "#1D4ED8",
+          backgroundColor: palette.primary,
           padding: 16,
           borderRadius: 8,
           marginBottom: 24,
           width: "80%",
         }}
       >
-        <ThemedText
+        <Text
           style={{
             fontSize: 20,
             fontWeight: "bold",
             marginBottom: 8,
+            color: palette.textOnPrimary,
           }}
         >
           {t("home.availableBalance")}
-        </ThemedText>
-        <ThemedText
+        </Text>
+        <Text
           style={{
             fontSize: 28,
             fontWeight: "bold",
             lineHeight: 34,
+            color: palette.textOnPrimary,
           }}
         >
           RM {balance?.toFixed(2)}
-        </ThemedText>
-      </ThemedView>
+        </Text>
+      </View>
 
-      <ThemedView style={sharedStyles.stepContainer}>
-        <ThemedText
-          style={{ fontSize: 20, fontWeight: "bold", marginBottom: 8 }}
+      <View
+        style={[sharedStyles.stepContainer, { backgroundColor: palette.surfaceMuted }]}
+      >
+        <Text
+          style={[defaultTextColor, { fontSize: 20, fontWeight: "bold", marginBottom: 8 }]}
         >
           {t("home.recentTransactions")}
-        </ThemedText>
+        </Text>
         {transactions.length === 0 ? (
-          <ThemedText style={{ marginVertical: "auto" }}>
+          <Text style={[defaultTextColor, { marginVertical: "auto" }]}>
             {t("home.noTransactions")}
-          </ThemedText>
+          </Text>
         ) : (
           <ScrollView
             style={{ maxHeight: 260 }}
@@ -103,9 +111,9 @@ export default function HomeScreen() {
                     router.push("/transaction");
                   }}
                 >
-                  <ThemedView
+                  <View
                     style={{
-                      backgroundColor: "#111827",
+                      backgroundColor: palette.surface,
                       flexDirection: "row",
                       justifyContent: "flex-start",
                       padding: 8,
@@ -116,18 +124,18 @@ export default function HomeScreen() {
                   >
                     <AvatarCircle name={tx.receiver?.name ?? "?"} size={40} />
 
-                    <ThemedView
+                    <View
                       style={{
                         flexDirection: "column",
-                        backgroundColor: "#111827",
+                        backgroundColor: palette.surface,
                       }}
                     >
-                      <ThemedText type="defaultSemiBold">
+                      <Text style={[defaultTextColor, { fontSize: 16, lineHeight: 24, fontWeight: "600" }]}>
                         {tx.receiver?.accountNumber}
-                      </ThemedText>
-                      <ThemedText>{tx.receiver?.name}</ThemedText>
-                    </ThemedView>
-                    <ThemedText
+                      </Text>
+                      <Text style={defaultTextColor}>{tx.receiver?.name}</Text>
+                    </View>
+                    <Text
                       style={{
                         color: "red",
                         marginLeft: "auto",
@@ -136,13 +144,13 @@ export default function HomeScreen() {
                       }}
                     >
                       - RM{parseFloat(tx.amount).toFixed(2)}
-                    </ThemedText>
-                  </ThemedView>
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               ))}
           </ScrollView>
         )}
-      </ThemedView>
+      </View>
       {/* <Button
         title={t("logout.button")}
         onPress={async () => {

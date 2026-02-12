@@ -1,9 +1,9 @@
-import { ThemedText, type ThemedTextProps } from "@/components/themed-text";
-import { LinearGradient } from "expo-linear-gradient";
+import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import React from "react";
 import {
   Pressable,
-  StyleSheet,
+  Text,
   View,
   type PressableProps,
   type StyleProp,
@@ -11,62 +11,42 @@ import {
   type ViewStyle,
 } from "react-native";
 
-type GradientPoint = {
-  x: number;
-  y: number;
-};
-
-type GradientColors = readonly [string, string, ...string[]];
-
 export type ButtonProps = Omit<PressableProps, "style" | "children"> & {
   label?: string;
   icon?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  contentStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
-  textType?: ThemedTextProps["type"];
   pressedStyle?: StyleProp<ViewStyle>;
   disabledStyle?: StyleProp<ViewStyle>;
-  gradient?: boolean;
-  gradientColors?: GradientColors;
-  gradientStart?: GradientPoint;
-  gradientEnd?: GradientPoint;
 };
-
-const DEFAULT_GRADIENT_COLORS: GradientColors = ["#1E40AF", "#2563EB"];
-const DEFAULT_GRADIENT_START: GradientPoint = { x: 0, y: 0 };
-const DEFAULT_GRADIENT_END: GradientPoint = { x: 1, y: 1 };
 
 export function Button({
   label,
   icon,
   style,
-  contentStyle,
   textStyle,
-  textType = "default",
   pressedStyle,
   disabledStyle,
-  gradient = false,
-  gradientColors = DEFAULT_GRADIENT_COLORS,
-  gradientStart = DEFAULT_GRADIENT_START,
-  gradientEnd = DEFAULT_GRADIENT_END,
   disabled,
   ...rest
 }: ButtonProps) {
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
+
   const content = (
     <>
       {icon}
       {label ? (
-        <ThemedText
-          type={textType}
+        <Text
           style={[
-            gradient && styles.gradientText,
-            Boolean(icon) ? styles.textWithIcon : undefined,
+            sharedStyles.buttonDefaultText,
+            { color: palette.text },
+            Boolean(icon) ? sharedStyles.buttonTextWithIcon : undefined,
             textStyle,
           ]}
         >
           {label}
-        </ThemedText>
+        </Text>
       ) : null}
     </>
   );
@@ -81,34 +61,7 @@ export function Button({
         disabled && disabledStyle,
       ]}
     >
-      {gradient ? (
-        <LinearGradient
-          colors={gradientColors}
-          start={gradientStart}
-          end={gradientEnd}
-          style={[styles.content, contentStyle]}
-        >
-          {content}
-        </LinearGradient>
-      ) : (
-        <View style={[styles.content, contentStyle]}>{content}</View>
-      )}
+      <View style={sharedStyles.buttonContent}>{content}</View>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  content: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  gradientText: {
-    color: "white",
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  textWithIcon: {
-    marginLeft: 8,
-  },
-});

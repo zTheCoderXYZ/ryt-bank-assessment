@@ -1,9 +1,10 @@
 import { Stack, usePathname, useRouter } from "expo-router";
-import { StyleSheet, View } from "react-native";
-import { ThemedText } from "@/components/themed-text";
+import { Text, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function PaymentModule() {
   return (
@@ -22,6 +23,8 @@ export default function PaymentModule() {
 
 function PaymentHeader() {
   const { t } = useTranslation();
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
   const router = useRouter();
   const pathname = usePathname();
   const step = pathname.split("/").pop() ?? "";
@@ -34,39 +37,27 @@ function PaymentHeader() {
   const title = titleMap[step] ?? t("payment.title");
 
   return (
-    <View style={styles.headerContainer}>
+    <View
+      style={[
+        sharedStyles.paymentHeaderContainer,
+        { backgroundColor: palette.screen, borderBottomColor: palette.border },
+      ]}
+    >
       <Button
         onPress={() => router.back()}
-        style={styles.backButton}
-        icon={<MaterialIcons name="arrow-back-ios" size={24} color="#E2E8F0" />}
+        style={sharedStyles.paymentHeaderBackButton}
+        icon={
+          <MaterialIcons
+            name="arrow-back-ios"
+            size={24}
+            color={palette.iconOnHeader}
+          />
+        }
       />
-      <ThemedText style={styles.headerTitle}>{title}</ThemedText>
-      <View style={styles.rightSpacer} />
+      <Text style={[sharedStyles.paymentHeaderTitle, { color: palette.text }]}>
+        {title}
+      </Text>
+      <View style={sharedStyles.paymentHeaderRightSpacer} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    height: 44,
-    justifyContent: "center",
-    paddingHorizontal: 12,
-    backgroundColor: "#0F172A",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  backButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    alignSelf: "flex-start",
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    flex: 1,
-    textAlign: "center",
-  },
-  rightSpacer: {
-    width: 32,
-  },
-});

@@ -1,14 +1,14 @@
 import { useBalanceQuery } from "@/api/balance.api";
 import { Button } from "@/components/ui/button";
-import { ThemedView } from "@/components/themed-view";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { usePaymentStore } from "@/store/payment";
-import { sharedStyles } from "@/styles/index.stylesheet";
+import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { TextInput } from "react-native";
+import { TextInput, View } from "react-native";
 import { z } from "zod";
 
 type FormValues = {
@@ -18,6 +18,8 @@ type FormValues = {
 
 export default function PaymentStep2() {
   const { t } = useTranslation();
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
   const { setAmount, setNote } = usePaymentStore();
   const { data: balance = 0 } = useBalanceQuery();
   const schema = useMemo(
@@ -60,15 +62,15 @@ export default function PaymentStep2() {
   }, [watchedAmount, watchedNote, setAmount, setNote]);
 
   return (
-    <ThemedView style={sharedStyles.container}>
+    <View style={[sharedStyles.container, { backgroundColor: palette.screen }]}>
       <Controller
         control={control}
         name="amount"
         render={({ field: { onChange, value } }) => (
           <TextInput
             style={{
-              color: "white",
-              backgroundColor: "#1F2933",
+              color: colorScheme === "dark" ? "white" : "#0F172A",
+              backgroundColor: palette.surfaceElevated,
               width: "80%",
               fontSize: 40,
               padding: 12,
@@ -78,6 +80,7 @@ export default function PaymentStep2() {
             }}
             keyboardType="decimal-pad"
             placeholder={t("payment.enterAmount")}
+            placeholderTextColor={colorScheme === "dark" ? "white" : "black"}
             value={value ? `RM ${value}` : ""}
             onChangeText={(text) => {
               const cleaned = text.replace(/[^0-9.]/g, "");
@@ -113,8 +116,8 @@ export default function PaymentStep2() {
         render={({ field: { onChange, value } }) => (
           <TextInput
             style={{
-              color: "white",
-              backgroundColor: "#1F2933",
+              color: colorScheme === "dark" ? "white" : "#0F172A",
+              backgroundColor: palette.surfaceElevated,
               width: "80%",
               fontSize: 24,
               padding: 12,
@@ -122,6 +125,7 @@ export default function PaymentStep2() {
               marginBottom: 16,
             }}
             placeholder={t("payment.noteOptional")}
+            placeholderTextColor={colorScheme === "dark" ? "white" : "black"}
             value={value}
             onChangeText={onChange}
           />
@@ -130,21 +134,22 @@ export default function PaymentStep2() {
 
       <Button
         label={t("payment.proceedToConfirmation")}
-        style={{
-          backgroundColor: "#1D4ED8",
-          borderRadius: 8,
-          overflow: "hidden",
-          marginTop: 48,
-        }}
         onPress={() => {
           router.push("/payment/step3");
         }}
         disabled={!isValid}
         disabledStyle={{ opacity: 0.6 }}
-        gradient
-        contentStyle={sharedStyles.gradientFill}
+        style={[
+          {
+            backgroundColor: palette.primary,
+            borderRadius: 8,
+            overflow: "hidden",
+            marginTop: 48,
+          },
+          sharedStyles.gradientFill,
+        ]}
         textStyle={sharedStyles.gradientButtonText}
       />
-    </ThemedView>
+    </View>
   );
 }

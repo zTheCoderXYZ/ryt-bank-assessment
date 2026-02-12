@@ -1,5 +1,6 @@
-import { ActivityIndicator, Modal, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Modal, View } from "react-native";
 import { useLoadingStore } from "@/store/loading";
+import { sharedStyles } from "@/styles/index.stylesheet";
 
 export default function LoadingOverlay() {
   const isLoading = useLoadingStore((state) => state.count > 0);
@@ -10,18 +11,9 @@ export default function LoadingOverlay() {
 
   return (
     <Modal transparent animationType="fade" visible>
-      <View style={styles.backdrop}>
+      <View style={sharedStyles.loadingOverlayBackdrop}>
         <ActivityIndicator size="large" />
       </View>
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.35)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

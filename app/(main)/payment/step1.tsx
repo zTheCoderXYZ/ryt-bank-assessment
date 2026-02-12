@@ -1,14 +1,18 @@
 import AvatarCircle from "@/components/avatar-circle";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
-import { Fonts } from "@/constants/theme";
 import { receivers } from "@/constants/user";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { usePaymentStore } from "@/store/payment";
+import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import * as Contacts from "expo-contacts";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 type ContactRow = { id: string; name: string; phone: string };
 type ReceiverRow = { name: string; accountNumber: string };
@@ -16,6 +20,9 @@ type ReceiverRow = { name: string; accountNumber: string };
 export default function PaymentStep1() {
   const { setReceiver } = usePaymentStore();
   const { t } = useTranslation();
+  const colorScheme = useColorScheme() ?? "light";
+  const palette = AppColors[colorScheme];
+  const defaultTextColor = { color: palette.text };
   const [activeTab, setActiveTab] = useState<"all" | "contacts">("all");
   const [contacts, setContacts] = useState<ContactRow[]>([]);
   const [permissionError, setPermissionError] = useState<string | null>(null);
@@ -63,40 +70,45 @@ export default function PaymentStep1() {
   }, [activeTab, contacts.length, allReceivers.length]);
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText
-        type="title"
+    <View style={[sharedStyles.paymentStep1Container, { backgroundColor: palette.screen }]}>
+      <Text
         style={{
-          fontFamily: Fonts.rounded,
+          ...defaultTextColor,
           fontSize: 20,
+          lineHeight: 32,
+          fontWeight: "bold",
           textAlign: "center",
         }}
       >
         {t("payment.selectPerson")}
-      </ThemedText>
+      </Text>
 
-      <View style={styles.tabRow}>
+      <View
+        style={[sharedStyles.paymentStep1TabRow, { backgroundColor: palette.surfaceMuted }]}
+      >
         <TouchableOpacity
           style={[
-            styles.tabButton,
-            activeTab === "all" && styles.tabButtonActive,
+            sharedStyles.paymentStep1TabButton,
+            activeTab === "all" && sharedStyles.paymentStep1TabButtonActive,
+            activeTab === "all" && { backgroundColor: palette.primary },
           ]}
           onPress={() => setActiveTab("all")}
         >
-          <ThemedText type="defaultSemiBold">
+          <Text style={[defaultTextColor, sharedStyles.paymentStep1SemiBoldText]}>
             {t("payment.tabs.all")}
-          </ThemedText>
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
-            styles.tabButton,
-            activeTab === "contacts" && styles.tabButtonActive,
+            sharedStyles.paymentStep1TabButton,
+            activeTab === "contacts" && sharedStyles.paymentStep1TabButtonActive,
+            activeTab === "contacts" && { backgroundColor: palette.primary },
           ]}
           onPress={() => setActiveTab("contacts")}
         >
-          <ThemedText type="defaultSemiBold">
+          <Text style={[defaultTextColor, sharedStyles.paymentStep1SemiBoldText]}>
             {t("payment.tabs.contacts")}
-          </ThemedText>
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -108,7 +120,7 @@ export default function PaymentStep1() {
             ? (item as ContactRow).id
             : (item as ReceiverRow).accountNumber
         }
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ItemSeparatorComponent={() => <View style={sharedStyles.paymentStep1Separator} />}
         onEndReachedThreshold={0.3}
         onEndReached={() => {
           if (page < totalPages) {
@@ -129,19 +141,19 @@ export default function PaymentStep1() {
               router.push("/payment/step2");
             }}
           >
-            {/* <ThemedView style={styles.receiverRow}>
-              <ThemedText type="defaultSemiBold">
+            {/* <View>
+              <Text style={sharedStyles.paymentStep1SemiBoldText}>
                 {(item as ContactRow | ReceiverRow).name}
-              </ThemedText>
-              <ThemedText type="default">
+              </Text>
+              <Text>
                 {isContacts
                   ? (item as ContactRow).phone
                   : (item as ReceiverRow).accountNumber}
-              </ThemedText>
-            </ThemedView> */}
-            <ThemedView
+              </Text>
+            </View> */}
+            <View
               style={{
-                backgroundColor: "#111827",
+                backgroundColor: palette.surface,
                 flexDirection: "row",
                 justifyContent: "flex-start",
                 padding: 8,
@@ -155,64 +167,30 @@ export default function PaymentStep1() {
                 size={40}
               />
 
-              <ThemedView
+              <View
                 style={{
                   flexDirection: "column",
-                  backgroundColor: "#111827",
+                  backgroundColor: palette.surface,
                 }}
               >
-                <ThemedText type="defaultSemiBold">
+                <Text style={[defaultTextColor, sharedStyles.paymentStep1SemiBoldText]}>
                   {isContacts
                     ? (item as ContactRow).phone
                     : (item as ReceiverRow).accountNumber}
-                </ThemedText>
-                <ThemedText>
+                </Text>
+                <Text style={defaultTextColor}>
                   {(item as ContactRow | ReceiverRow).name}
-                </ThemedText>
-              </ThemedView>
-            </ThemedView>
+                </Text>
+              </View>
+            </View>
           </TouchableOpacity>
         )}
       />
       {permissionError ? (
-        <ThemedText style={{ marginTop: 12 }}>{permissionError}</ThemedText>
+        <Text style={[defaultTextColor, { marginTop: 12 }]}>
+          {permissionError}
+        </Text>
       ) : null}
-    </ThemedView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
-    paddingVertical: 12,
-    backgroundColor: "#0F172A",
-    alignItems: "center",
-  },
-  titleContainer: {},
-  tabRow: {
-    width: "80%",
-    backgroundColor: "#020617",
-    flexDirection: "row",
-    marginTop: 12,
-    borderRadius: 4,
-    gap: 8,
-  },
-  tabButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-    width: "50%",
-    alignItems: "center",
-  },
-  tabButtonActive: {
-    backgroundColor: "#1D4ED8",
-  },
-  receiverRow: {
-    paddingVertical: 12,
-  },
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: "#C0C0C0",
-  },
-});

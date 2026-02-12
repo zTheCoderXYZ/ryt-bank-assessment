@@ -1,5 +1,5 @@
-import { StyleSheet, View } from "react-native";
-import { ThemedText } from "@/components/themed-text";
+import { sharedStyles } from "@/styles/index.stylesheet";
+import { Text, View } from "react-native";
 
 type Props = {
   name: string;
@@ -17,7 +17,7 @@ export default function AvatarCircle({
   return (
     <View
       style={[
-        styles.container,
+        sharedStyles.avatarCircleContainer,
         {
           width: size,
           height: size,
@@ -26,20 +26,11 @@ export default function AvatarCircle({
         },
       ]}
     >
-      <ThemedText style={[styles.text, { fontSize: Math.round(size * 0.45) }]}>
+      <Text
+        style={[sharedStyles.avatarCircleText, { fontSize: Math.round(size * 0.45) }]}
+      >
         {initial}
-      </ThemedText>
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    color: "white",
-    fontWeight: "700",
-  },
-});

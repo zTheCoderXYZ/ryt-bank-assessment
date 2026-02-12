@@ -1,50 +1,24 @@
-# Welcome to your Expo app 👋
+# Ryt Bank Assessment
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Built with accessibility in mind, this app supports both English and Malay using i18n, along with light and dark mode managed via custom hooks and Zustand for global state.
 
-## Get started
+The app maintains design consistency by reusing components and applying a shared stylesheet across screens.
 
-1. Install dependencies
+Form handling is implemented with React Hook Form for robust validation and better input state management. API interactions are handled using `useQuery` and `useMutation` for predictable fetching and mutation flows.
 
-   ```bash
-   npm install
+The app is built with Expo to leverage native-friendly capabilities such as biometric authentication, contacts access, routing, and fast mobile testing with Expo Go.
+
+## Run the App (Expo Go)
+
+1. Install dependencies:
    ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
+   yarn install
    ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+2. Install Expo Go on your mobile phone.
+3. Start the Metro server for Expo Go:
+   ```
+   yarn start:go
+   ```
+4. Scan the QR code shown in the terminal:
+   - iOS: Scan using the Camera app.
+   - Android: Scan using the Expo Go app.
