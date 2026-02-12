@@ -37,7 +37,7 @@ export default function TransactionDetail() {
           Amount: RM {parseFloat(transaction.amount).toFixed(2)}
         </ThemedText>
         <ThemedText>Note: {transaction.note || "-"}</ThemedText>
-        <ThemedText>Date: {transaction.date || "-"}</ThemedText>
+        <ThemedText>Date: {formatDateTime(transaction.date)}</ThemedText>
       </ThemedView>
 
       <Pressable
@@ -53,6 +53,23 @@ export default function TransactionDetail() {
       </Pressable>
     </ThemedView>
   );
+}
+
+function formatDateTime(value?: string) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = String(date.getFullYear());
+
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+
+  return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
 }
 
 const styles = StyleSheet.create({

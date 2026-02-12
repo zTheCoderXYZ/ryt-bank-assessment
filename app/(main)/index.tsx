@@ -92,7 +92,7 @@ export default function HomeScreen() {
             showsVerticalScrollIndicator={false}
           >
             {transactions
-              .slice(-5)
+              .slice(-10)
               .reverse()
               .map((tx) => (
                 <TouchableOpacity

@@ -6,7 +6,6 @@ import { StatusBar, StyleSheet, View } from "react-native";
 
 export default function RootLayout() {
   const [queryClient] = useState(() => new QueryClient());
-
   return (
     <QueryClientProvider client={queryClient}>
       <View style={styles.root}>

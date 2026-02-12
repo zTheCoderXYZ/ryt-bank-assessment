@@ -3,14 +3,16 @@ import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useTransactionsStore } from "@/store/transactions";
 import { sharedStyles } from "@/styles/index.stylesheet";
+import { useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { Pressable } from "react-native";
 
 export default function PaymentStep4() {
   const { transactions } = useTransactionsStore();
+  const queryClient = useQueryClient();
 
-  console.log(transactions, "debug transactions");
+  const latest = transactions[0];
   return (
     <ThemedView style={sharedStyles.container}>
       <IconSymbol size={64} name="checkmark.circle.fill" color="#22C55E" />
@@ -34,7 +36,7 @@ export default function PaymentStep4() {
           marginTop: 24,
         }}
       >
-        Transaction ID: {transactions[transactions.length - 1]?.id}
+        Transaction ID: {latest?.id}
       </ThemedText>
 
       <ThemedText
@@ -46,8 +48,7 @@ export default function PaymentStep4() {
           width: "80%",
         }}
       >
-        Receiver: {transactions[transactions.length - 1]?.receiver?.name} (
-        {transactions[transactions.length - 1]?.receiver?.accountNumber})
+        Receiver: {latest?.receiver?.name} ({latest?.receiver?.accountNumber})
       </ThemedText>
       <ThemedText
         style={{
@@ -58,7 +59,7 @@ export default function PaymentStep4() {
           width: "80%",
         }}
       >
-        Amount: {transactions[transactions.length - 1]?.amount}
+        Amount: {latest?.amount}
       </ThemedText>
       <ThemedText
         style={{
@@ -69,7 +70,7 @@ export default function PaymentStep4() {
           width: "80%",
         }}
       >
-        Note: {transactions[transactions.length - 1]?.note}
+        Note: {latest?.note}
       </ThemedText>
 
       <Pressable
@@ -81,6 +82,8 @@ export default function PaymentStep4() {
           width: "80%",
         }}
         onPress={() => {
+          queryClient.invalidateQueries({ queryKey: ["transactions"] });
+          queryClient.invalidateQueries({ queryKey: ["balance"] });
           router.dismissAll();
           router.replace("/(main)");
         }}
