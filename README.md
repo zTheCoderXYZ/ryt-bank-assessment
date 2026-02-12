@@ -25,4 +25,6 @@ The app is built with Expo to leverage native-friendly capabilities such as biom
 
 Note: When using Expo Go, biometrics like face and touch id will not be available on iOS. For that to be enabled. Run the project on Macbook and connect via cable with phone. Then use the command yarn ios.
 
+For devices without any biometrics setup, the app will prompt to enter a password instead which is defaulted currently to 1234
+
 Link to Demo Video: [https://drive.google.com/file/d/1QLT-BkZ-zZk7wGNnXx5MTR5RPHCt9le9/view?usp=sharing](https://drive.google.com/file/d/1nI10qkPTh9Nbfc9S9EGkQM7serKy16is/view?usp=sharing)
