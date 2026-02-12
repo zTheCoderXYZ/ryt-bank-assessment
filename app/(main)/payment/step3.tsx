@@ -6,9 +6,11 @@ import { usePaymentStore } from "@/store/payment";
 import * as LocalAuthentication from "expo-local-authentication";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Modal, Pressable, StyleSheet, TextInput, View } from "react-native";
 
 export default function PaymentStep3() {
+  const { t } = useTranslation();
   const { amount, note, receiver, reset } = usePaymentStore();
   const [isConfirming, setIsConfirming] = useState(false);
   const { mutateAsync: executeTransfer } = useTransferMutation();
@@ -30,8 +32,8 @@ export default function PaymentStep3() {
       }
 
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Confirm payment",
-        fallbackLabel: "Use passcode",
+        promptMessage: t("payment.confirmPrompt"),
+        fallbackLabel: t("payment.fallbackLabel"),
       });
 
       if (result.success) {
@@ -71,7 +73,7 @@ export default function PaymentStep3() {
       );
       return;
     }
-    setPinError("Incorrect password. Please try again.");
+    setPinError(t("payment.errors.incorrectPassword"));
   };
 
   return (
@@ -85,7 +87,7 @@ export default function PaymentStep3() {
           width: "80%",
         }}
       >
-        Receiver: {receiver.name} ({receiver.accountNumber})
+        {t("payment.receiverLabel")}: {receiver.name} ({receiver.accountNumber})
       </ThemedText>
       <ThemedText
         style={{
@@ -96,7 +98,7 @@ export default function PaymentStep3() {
           width: "80%",
         }}
       >
-        Amount: {amount}
+        {t("payment.amountLabel")}: {amount}
       </ThemedText>
       <ThemedText
         style={{
@@ -107,7 +109,7 @@ export default function PaymentStep3() {
           width: "80%",
         }}
       >
-        Note: {note}
+        {t("payment.noteLabel")}: {note}
       </ThemedText>
       <Pressable
         style={{
@@ -124,7 +126,9 @@ export default function PaymentStep3() {
         <ThemedText
           style={{ color: "white", fontWeight: "bold", fontSize: 18 }}
         >
-          {isConfirming ? "Confirming..." : "Confirm Payment"}
+          {isConfirming
+            ? t("payment.confirming")
+            : t("payment.confirmPayment")}
         </ThemedText>
       </Pressable>
       <Modal
@@ -136,12 +140,12 @@ export default function PaymentStep3() {
         <View style={styles.modalBackdrop}>
           <ThemedView style={styles.modalCard}>
             <ThemedText type="defaultSemiBold" style={styles.modalTitle}>
-              Enter Password
+              {t("payment.enterPassword")}
             </ThemedText>
             <TextInput
               value={pin}
               onChangeText={setPin}
-              placeholder="1234"
+              placeholder={t("payment.passwordPlaceholder")}
               keyboardType="number-pad"
               secureTextEntry
               style={styles.input}
@@ -151,10 +155,10 @@ export default function PaymentStep3() {
             ) : null}
             <View style={styles.modalActions}>
               <Pressable onPress={() => setShowPinModal(false)}>
-                <ThemedText type="defaultSemiBold">Cancel</ThemedText>
+                <ThemedText type="defaultSemiBold">{t("common.cancel")}</ThemedText>
               </Pressable>
               <Pressable onPress={handlePinSubmit}>
-                <ThemedText type="defaultSemiBold">Submit</ThemedText>
+                <ThemedText type="defaultSemiBold">{t("common.submit")}</ThemedText>
               </Pressable>
             </View>
           </ThemedView>

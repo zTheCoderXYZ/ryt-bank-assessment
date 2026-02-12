@@ -6,9 +6,11 @@ import { sharedStyles } from "@/styles/index.stylesheet";
 import { useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Pressable } from "react-native";
 
 export default function PaymentStep4() {
+  const { t } = useTranslation();
   const { transactions } = useTransactionsStore();
   const queryClient = useQueryClient();
 
@@ -24,7 +26,7 @@ export default function PaymentStep4() {
           marginTop: 16,
         }}
       >
-        Payment Successful!
+        {t("payment.successTitle")}
       </ThemedText>
       <ThemedText
         style={{
@@ -36,7 +38,7 @@ export default function PaymentStep4() {
           marginTop: 24,
         }}
       >
-        Transaction ID: {latest?.id}
+        {t("payment.transactionIdLabel")}: {latest?.id}
       </ThemedText>
 
       <ThemedText
@@ -48,7 +50,8 @@ export default function PaymentStep4() {
           width: "80%",
         }}
       >
-        Receiver: {latest?.receiver?.name} ({latest?.receiver?.accountNumber})
+        {t("payment.receiverLabel")}: {latest?.receiver?.name} (
+        {latest?.receiver?.accountNumber})
       </ThemedText>
       <ThemedText
         style={{
@@ -59,7 +62,7 @@ export default function PaymentStep4() {
           width: "80%",
         }}
       >
-        Amount: {latest?.amount}
+        {t("payment.amountLabel")}: {latest?.amount}
       </ThemedText>
       <ThemedText
         style={{
@@ -70,7 +73,7 @@ export default function PaymentStep4() {
           width: "80%",
         }}
       >
-        Note: {latest?.note}
+        {t("payment.noteLabel")}: {latest?.note}
       </ThemedText>
 
       <Pressable
@@ -94,7 +97,9 @@ export default function PaymentStep4() {
           end={{ x: 1, y: 1 }}
           style={sharedStyles.gradientFill}
         >
-          <ThemedText style={sharedStyles.gradientButtonText}>Done</ThemedText>
+          <ThemedText style={sharedStyles.gradientButtonText}>
+            {t("common.done")}
+          </ThemedText>
         </LinearGradient>
       </Pressable>
     </ThemedView>

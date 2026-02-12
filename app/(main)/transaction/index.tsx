@@ -4,9 +4,11 @@ import { usePaymentStore } from "@/store/payment";
 import { useTransactionsStore } from "@/store/transactions";
 import { sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet } from "react-native";
 
 export default function TransactionDetail() {
+  const { t, i18n } = useTranslation();
   const { transactions, selectedTransactionId } = useTransactionsStore();
   const { setReceiver, setAmount, setNote } = usePaymentStore();
 
@@ -15,9 +17,9 @@ export default function TransactionDetail() {
   if (!transaction) {
     return (
       <ThemedView style={sharedStyles.container}>
-        <ThemedText>No transaction selected.</ThemedText>
+        <ThemedText>{t("transaction.noSelected")}</ThemedText>
         <Pressable onPress={() => router.back()} style={styles.button}>
-          <ThemedText style={styles.buttonText}>Go Back</ThemedText>
+          <ThemedText style={styles.buttonText}>{t("common.goBack")}</ThemedText>
         </Pressable>
       </ThemedView>
     );
@@ -25,19 +27,23 @@ export default function TransactionDetail() {
 
   return (
     <ThemedView style={sharedStyles.container}>
-      <ThemedText style={styles.title}>Transaction Details</ThemedText>
+      <ThemedText style={styles.title}>{t("transaction.title")}</ThemedText>
 
       <ThemedView style={styles.card}>
-        <ThemedText>Transaction ID: {transaction.id}</ThemedText>
         <ThemedText>
-          Receiver: {transaction.receiver.name} (
+          {t("payment.transactionIdLabel")}: {transaction.id}
+        </ThemedText>
+        <ThemedText>
+          {t("payment.receiverLabel")}: {transaction.receiver.name} (
           {transaction.receiver.accountNumber})
         </ThemedText>
         <ThemedText>
-          Amount: RM {parseFloat(transaction.amount).toFixed(2)}
+          {t("payment.amountLabel")}: RM {parseFloat(transaction.amount).toFixed(2)}
         </ThemedText>
-        <ThemedText>Note: {transaction.note || "-"}</ThemedText>
-        <ThemedText>Date: {formatDateTime(transaction.date)}</ThemedText>
+        <ThemedText>{t("payment.noteLabel")}: {transaction.note || "-"}</ThemedText>
+        <ThemedText>
+          {t("transaction.dateLabel")}: {formatDateTime(transaction.date, i18n.language)}
+        </ThemedText>
       </ThemedView>
 
       <Pressable
@@ -49,27 +55,26 @@ export default function TransactionDetail() {
           router.push("/payment/step3");
         }}
       >
-        <ThemedText style={styles.buttonText}>Repeat Transfer</ThemedText>
+        <ThemedText style={styles.buttonText}>
+          {t("transaction.repeatTransfer")}
+        </ThemedText>
       </Pressable>
     </ThemedView>
   );
 }
 
-function formatDateTime(value?: string) {
+function formatDateTime(value?: string, locale = "en") {
   if (!value) return "-";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "-";
-
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear());
-
-  let hours = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12 || 12;
-
-  return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
+  return date.toLocaleString(locale === "bm" ? "ms-MY" : "en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
 
 const styles = StyleSheet.create({

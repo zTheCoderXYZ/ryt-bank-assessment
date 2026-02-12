@@ -25,13 +25,13 @@ export default function LoginPage() {
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
       if (!hasHardware || !isEnrolled) {
-        setBioError("Biometrics not available on this device.");
+        setBioError(t("login.errors.biometricsUnavailable"));
         return;
       }
 
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Log in with biometrics",
-        fallbackLabel: "Use passcode",
+        promptMessage: t("login.biometrics.prompt"),
+        fallbackLabel: t("login.biometrics.fallback"),
       });
 
       if (result.success) {
@@ -40,14 +40,14 @@ export default function LoginPage() {
             router.replace("/(main)");
           },
           onError: () => {
-            setBioError("Login failed.");
+            setBioError(t("login.errors.failed"));
           },
         });
       } else {
-        setBioError("Biometric authentication failed. Please login normally.");
+        setBioError(t("login.errors.biometricFailed"));
       }
-    } catch (error) {
-      setBioError("Biometric authentication failed. Please login normally.");
+    } catch {
+      setBioError(t("login.errors.biometricFailed"));
     } finally {
       setBioLoading(false);
     }
@@ -56,7 +56,7 @@ export default function LoginPage() {
   return (
     <SafeAreaView style={sharedStyles.container}>
       <ThemedText style={{ fontSize: 48, fontWeight: "bold", lineHeight: 58 }}>
-        MyBank
+        {t("app.name")}
       </ThemedText>
 
       <ThemedText
@@ -67,7 +67,7 @@ export default function LoginPage() {
           lineHeight: 32,
         }}
       >
-        Secure banking made simple
+        {t("login.tagline")}
       </ThemedText>
 
       <TextInput
@@ -83,7 +83,7 @@ export default function LoginPage() {
           color: "white",
         }}
         placeholderTextColor={"white"}
-        placeholder="Username"
+        placeholder={t("login.usernamePlaceholder")}
       />
       <TextInput
         style={{
@@ -97,7 +97,7 @@ export default function LoginPage() {
           backgroundColor: "#1F2933",
           color: "white",
         }}
-        placeholder="Password"
+        placeholder={t("login.passwordPlaceholder")}
         placeholderTextColor={"white"}
         secureTextEntry
       />
@@ -110,7 +110,7 @@ export default function LoginPage() {
                 router.replace("/(main)");
               },
               onError: () => {
-                setBioError("Login failed.");
+                setBioError(t("login.errors.failed"));
               },
             });
           }}
@@ -151,7 +151,7 @@ export default function LoginPage() {
             style={sharedStyles.gradientFill}
           >
             <ThemedText style={sharedStyles.gradientButtonText}>
-              {"Login with Biometrics"}
+              {t("login.biometrics.button")}
             </ThemedText>
           </LinearGradient>
         </Pressable>
@@ -165,12 +165,12 @@ export default function LoginPage() {
         <View style={sharedStyles.modalBackdrop}>
           <ThemedView style={sharedStyles.modalCard}>
             <ThemedText type="defaultSemiBold" style={sharedStyles.modalTitle}>
-              Biometric Error
+              {t("login.biometrics.errorTitle")}
             </ThemedText>
             <ThemedText style={sharedStyles.errorText}>{bioError}</ThemedText>
             <View style={sharedStyles.modalActions}>
               <Pressable onPress={() => setBioError(null)}>
-                <ThemedText type="defaultSemiBold">Cancel</ThemedText>
+                <ThemedText type="defaultSemiBold">{t("common.cancel")}</ThemedText>
               </Pressable>
             </View>
           </ThemedView>

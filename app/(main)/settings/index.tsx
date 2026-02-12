@@ -5,9 +5,12 @@ import { useSettingsStore } from "@/store/settings";
 import { sharedStyles } from "@/styles/index.stylesheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
+import { changeLanguage } from "i18next";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const { language, setLanguage, theme, setTheme } = useSettingsStore();
   const { mutateAsync: executeLogout } = useLogoutMutation();
   return (
@@ -31,29 +34,39 @@ export default function SettingsPage() {
 
           <View style={styles.rightSpacer} />
         </View>
-        <ThemedText style={styles.headerTitle}>Settings</ThemedText>
+        <ThemedText style={styles.headerTitle}>{t("settings.title")}</ThemedText>
       </ThemedView>
 
-      <ThemedText style={{ marginTop: 20, fontSize: 16 }}>Language</ThemedText>
+      <ThemedText style={{ marginTop: 20, fontSize: 16 }}>
+        {t("settings.language")}
+      </ThemedText>
       <Pressable
         style={[
           styles.optionButton,
-          language === "english" && styles.optionButtonActive,
+          language === "en" && styles.optionButtonActive,
         ]}
-        onPress={() => setLanguage("english")}
+        onPress={() => {
+          setLanguage("en");
+          void changeLanguage("en");
+        }}
       >
-        <ThemedText>English</ThemedText>
+        <ThemedText>{t("settings.english")}</ThemedText>
       </Pressable>
       <Pressable
         style={[
           styles.optionButton,
-          language === "malay" && styles.optionButtonActive,
+          language === "bm" && styles.optionButtonActive,
         ]}
-        onPress={() => setLanguage("malay")}
+        onPress={() => {
+          setLanguage("bm");
+          void changeLanguage("bm");
+        }}
       >
-        <ThemedText>Malay</ThemedText>
+        <ThemedText>{t("settings.malay")}</ThemedText>
       </Pressable>
-      <ThemedText style={{ marginTop: 20, fontSize: 16 }}>Theme</ThemedText>
+      <ThemedText style={{ marginTop: 20, fontSize: 16 }}>
+        {t("settings.theme")}
+      </ThemedText>
       <Pressable
         style={[
           styles.optionButton,
@@ -61,7 +74,7 @@ export default function SettingsPage() {
         ]}
         onPress={() => setTheme("light")}
       >
-        <ThemedText>Light</ThemedText>
+        <ThemedText>{t("settings.light")}</ThemedText>
       </Pressable>
       <Pressable
         style={[
@@ -70,7 +83,7 @@ export default function SettingsPage() {
         ]}
         onPress={() => setTheme("dark")}
       >
-        <ThemedText>Dark</ThemedText>
+        <ThemedText>{t("settings.dark")}</ThemedText>
       </Pressable>
 
       <Pressable
@@ -91,7 +104,9 @@ export default function SettingsPage() {
           });
         }}
       >
-        <ThemedText style={sharedStyles.gradientButtonText}>Logout</ThemedText>
+        <ThemedText style={sharedStyles.gradientButtonText}>
+          {t("logout.button")}
+        </ThemedText>
       </Pressable>
     </ThemedView>
   );

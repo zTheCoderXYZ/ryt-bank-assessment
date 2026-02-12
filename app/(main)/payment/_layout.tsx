@@ -2,6 +2,7 @@ import { Stack, usePathname, useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useTranslation } from "react-i18next";
 
 export default function PaymentModule() {
   return (
@@ -19,16 +20,17 @@ export default function PaymentModule() {
 }
 
 function PaymentHeader() {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const step = pathname.split("/").pop() ?? "";
   const titleMap: Record<string, string> = {
-    step1: "Select Receiver",
-    step2: "Enter Amount",
-    step3: "Confirm",
-    step4: "Success",
+    step1: t("payment.steps.step1"),
+    step2: t("payment.steps.step2"),
+    step3: t("payment.steps.step3"),
+    step4: t("payment.steps.step4"),
   };
-  const title = titleMap[step] ?? "Payment";
+  const title = titleMap[step] ?? t("payment.title");
 
   return (
     <View style={styles.headerContainer}>

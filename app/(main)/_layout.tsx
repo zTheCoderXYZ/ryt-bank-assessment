@@ -51,7 +51,7 @@ export default function RootLayout() {
           <Tabs.Screen
             name="index"
             options={{
-              title: t("home.welcome"),
+              title: t("home.title"),
               tabBarIcon: ({ color }) => (
                 <IconSymbol size={28} name="house.fill" color={color} />
               ),
@@ -76,10 +76,11 @@ export default function RootLayout() {
 }
 
 function MainHeader() {
+  const { t } = useTranslation();
   return (
     <ThemedView style={styles.headerContainer}>
       <ThemedText type="defaultSemiBold" style={styles.headerTitle}>
-        MyBank
+        {t("app.name")}
       </ThemedText>
       <TouchableOpacity
         style={styles.headerButton}

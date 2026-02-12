@@ -26,7 +26,7 @@ export default function PaymentStep1() {
     (async () => {
       const { status } = await Contacts.requestPermissionsAsync();
       if (status !== "granted") {
-        setPermissionError("Permission denied");
+        setPermissionError(t("payment.errors.permissionDenied"));
         return;
       }
 
@@ -40,7 +40,7 @@ export default function PaymentStep1() {
           if (!phone) return null;
           return {
             id: c.id,
-            name: c.name ?? "Unknown",
+            name: c.name ?? t("common.unknown"),
             phone,
           };
         })
@@ -48,11 +48,11 @@ export default function PaymentStep1() {
 
       setContacts(rows);
     })();
-  }, []);
+  }, [t]);
 
   const allReceivers = useMemo(() => Object.values(receivers), []);
   const isContacts = activeTab === "contacts";
-  const listData: Array<ContactRow | ReceiverRow> = isContacts
+  const listData: (ContactRow | ReceiverRow)[] = isContacts
     ? contacts
     : allReceivers;
   const totalPages = Math.ceil(listData.length / pageSize) || 1;
@@ -82,7 +82,7 @@ export default function PaymentStep1() {
           ]}
           onPress={() => setActiveTab("all")}
         >
-          <ThemedText type="defaultSemiBold">All</ThemedText>
+          <ThemedText type="defaultSemiBold">{t("payment.tabs.all")}</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -91,7 +91,7 @@ export default function PaymentStep1() {
           ]}
           onPress={() => setActiveTab("contacts")}
         >
-          <ThemedText type="defaultSemiBold">Contacts</ThemedText>
+          <ThemedText type="defaultSemiBold">{t("payment.tabs.contacts")}</ThemedText>
         </TouchableOpacity>
       </View>
 
@@ -169,6 +169,9 @@ export default function PaymentStep1() {
           </TouchableOpacity>
         )}
       />
+      {permissionError ? (
+        <ThemedText style={{ marginTop: 12 }}>{permissionError}</ThemedText>
+      ) : null}
     </ThemedView>
   );
 }

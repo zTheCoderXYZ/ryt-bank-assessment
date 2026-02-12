@@ -1,139 +1,187 @@
 export const translations = {
   en: {
     translation: {
+      app: {
+        name: "MyBank",
+      },
+      common: {
+        cancel: "Cancel",
+        submit: "Submit",
+        done: "Done",
+        goBack: "Go Back",
+        unknown: "Unknown",
+      },
       login: {
         welcome: "Welcome to Ryt Bank",
         button: "Login",
+        tagline: "Secure banking made simple",
+        usernamePlaceholder: "Username",
+        passwordPlaceholder: "Password",
+        biometrics: {
+          button: "Login with Biometrics",
+          prompt: "Log in with biometrics",
+          fallback: "Use passcode",
+          errorTitle: "Biometric Error",
+        },
+        errors: {
+          failed: "Login failed.",
+          biometricsUnavailable: "Biometrics not available on this device.",
+          biometricFailed: "Biometric authentication failed. Please login normally.",
+        },
       },
       logout: {
         button: "Logout",
       },
-      modal: {
-        title: "Modal",
-        body: "This is a modal",
-        link: "Go to home screen",
-      },
       home: {
-        noTransactions: "No recent transactions.",
-        recentTransactions: "Recent Transactions",
+        title: "Home",
         welcome: "Welcome!",
         balance: "Balance",
-        step1: {
-          title: "Step 1: Try it out",
-          body: "Edit <bold>app/(tabs)/index.tsx</bold> to see changes. Press <bold>{{shortcut}}</bold> to open developer tools.",
-        },
-        step2: {
-          title: "Step 2: Explore",
-          body: "Tap the Explore tab to learn more about what's included in this starter app.",
-        },
-        step3: {
-          title: "Step 3: Get a fresh start",
-          body: "When you're ready, run <bold>npm run reset-project</bold> to get a fresh <bold>app</bold> directory. This will move the current <bold>app</bold> to <bold>app-example</bold>.",
-        },
-        link: {
-          action: "Action",
-          share: "Share",
-          more: "More",
-          delete: "Delete",
-        },
+        availableBalance: "Available Balance",
+        noTransactions: "No recent transactions.",
+        recentTransactions: "Recent Transactions",
+      },
+      settings: {
+        title: "Settings",
+        language: "Language",
+        theme: "Theme",
+        english: "English",
+        malay: "Malay",
+        light: "Light",
+        dark: "Dark",
       },
       payment: {
         title: "Payment",
         selectPerson: "Who are you sending payment to?",
+        enterAmount: "Enter amount",
+        noteOptional: "Add a Note (optional)",
+        proceedToConfirmation: "Proceed to Confirmation",
+        confirmPrompt: "Confirm payment",
+        fallbackLabel: "Use passcode",
+        confirmPayment: "Confirm Payment",
+        confirming: "Confirming...",
+        enterPassword: "Enter Password",
+        passwordPlaceholder: "1234",
+        successTitle: "Payment Successful!",
+        receiverLabel: "Receiver",
+        amountLabel: "Amount",
+        noteLabel: "Note",
+        transactionIdLabel: "Transaction ID",
+        tabs: {
+          all: "All",
+          contacts: "Contacts",
+        },
+        steps: {
+          step1: "Select Receiver",
+          step2: "Enter Amount",
+          step3: "Confirm",
+          step4: "Success",
+        },
+        errors: {
+          invalidAmount: "Invalid amount",
+          insufficientBalance: "Insufficient balance (min RM10 remaining)",
+          noteTooLong: "Note is too long",
+          incorrectPassword: "Incorrect password. Please try again.",
+          permissionDenied: "Permission denied",
+        },
       },
-      explore: {
-        title: "Explore",
-        lead: "This app includes example code to help you get started.",
-        section: {
-          routing: "File-based routing",
-          support: "Android, iOS, and web support",
-          images: "Images",
-          theme: "Light and dark mode components",
-          animations: "Animations",
-        },
-        routing: {
-          body1:
-            "This app has two screens: <bold>app/(tabs)/index.tsx</bold> and <bold>app/(tabs)/explore.tsx</bold>",
-          body2:
-            "The layout file in <bold>app/(tabs)/_layout.tsx</bold> sets up the tab navigator.",
-        },
-        learnMore: "Learn more",
-        support: {
-          body: "You can open this project on Android, iOS, and the web. To open the web version, press <bold>w</bold> in the terminal running this project.",
-        },
-        images: {
-          body: "For static images, you can use the <bold>@2x</bold> and <bold>@3x</bold> suffixes to provide files for different screen densities",
-        },
-        theme: {
-          body: "This template has light and dark mode support. The <bold>useColorScheme()</bold> hook lets you inspect what the user's current color scheme is, and so you can adjust UI colors accordingly.",
-        },
-        animations: {
-          body: "This template includes an example of an animated component. The <bold>components/HelloWave.tsx</bold> component uses the powerful <bold>react-native-reanimated</bold> library to create a waving hand animation.",
-          iosOnly:
-            "The <bold>components/ParallaxScrollView.tsx</bold> component provides a parallax effect for the header image.",
-        },
+      transaction: {
+        title: "Transaction Details",
+        noSelected: "No transaction selected.",
+        repeatTransfer: "Repeat Transfer",
+        dateLabel: "Date",
       },
     },
   },
-  es: {
+  bm: {
     translation: {
-      modal: {
-        title: "Modal",
-        body: "Este es un modal",
-        link: "Ir a la pantalla principal",
+      app: {
+        name: "MyBank",
+      },
+      common: {
+        cancel: "Batal",
+        submit: "Hantar",
+        done: "Selesai",
+        goBack: "Kembali",
+        unknown: "Tidak diketahui",
+      },
+      login: {
+        welcome: "Selamat datang ke Ryt Bank",
+        button: "Log masuk",
+        tagline: "Perbankan selamat dipermudahkan",
+        usernamePlaceholder: "Nama pengguna",
+        passwordPlaceholder: "Kata laluan",
+        biometrics: {
+          button: "Log masuk dengan Biometrik",
+          prompt: "Log masuk dengan biometrik",
+          fallback: "Guna kod laluan",
+          errorTitle: "Ralat Biometrik",
+        },
+        errors: {
+          failed: "Log masuk gagal.",
+          biometricsUnavailable: "Biometrik tidak tersedia pada peranti ini.",
+          biometricFailed: "Pengesahan biometrik gagal. Sila log masuk seperti biasa.",
+        },
+      },
+      logout: {
+        button: "Log keluar",
       },
       home: {
-        welcome: "¡Bienvenido!",
-        step1: {
-          title: "Paso 1: Pruébalo",
-          body: "Edita <bold>app/(tabs)/index.tsx</bold> para ver los cambios. Pulsa <bold>{{shortcut}}</bold> para abrir las herramientas de desarrollador.",
+        title: "Laman Utama",
+        welcome: "Selamat datang!",
+        balance: "Baki",
+        availableBalance: "Baki Tersedia",
+        noTransactions: "Tiada transaksi terkini.",
+        recentTransactions: "Transaksi Terkini",
+      },
+      settings: {
+        title: "Tetapan",
+        language: "Bahasa",
+        theme: "Tema",
+        english: "Inggeris",
+        malay: "Melayu",
+        light: "Cerah",
+        dark: "Gelap",
+      },
+      payment: {
+        title: "Pembayaran",
+        selectPerson: "Kepada siapa anda ingin membuat pembayaran?",
+        enterAmount: "Masukkan jumlah",
+        noteOptional: "Tambah nota (pilihan)",
+        proceedToConfirmation: "Teruskan ke Pengesahan",
+        confirmPrompt: "Sahkan pembayaran",
+        fallbackLabel: "Guna kod laluan",
+        confirmPayment: "Sahkan Pembayaran",
+        confirming: "Sedang mengesahkan...",
+        enterPassword: "Masukkan Kata Laluan",
+        passwordPlaceholder: "1234",
+        successTitle: "Pembayaran Berjaya!",
+        receiverLabel: "Penerima",
+        amountLabel: "Jumlah",
+        noteLabel: "Nota",
+        transactionIdLabel: "ID Transaksi",
+        tabs: {
+          all: "Semua",
+          contacts: "Kenalan",
         },
-        step2: {
-          title: "Paso 2: Explora",
-          body: "Toca la pestaña Explorar para aprender más sobre lo que incluye esta app inicial.",
+        steps: {
+          step1: "Pilih Penerima",
+          step2: "Masukkan Jumlah",
+          step3: "Sahkan",
+          step4: "Berjaya",
         },
-        step3: {
-          title: "Paso 3: Empieza de cero",
-          body: "Cuando estés listo, ejecuta <bold>npm run reset-project</bold> para obtener un directorio <bold>app</bold> nuevo. Esto moverá el <bold>app</bold> actual a <bold>app-example</bold>.",
-        },
-        link: {
-          action: "Acción",
-          share: "Compartir",
-          more: "Más",
-          delete: "Eliminar",
+        errors: {
+          invalidAmount: "Jumlah tidak sah",
+          insufficientBalance: "Baki tidak mencukupi (minimum RM10 perlu berbaki)",
+          noteTooLong: "Nota terlalu panjang",
+          incorrectPassword: "Kata laluan salah. Sila cuba lagi.",
+          permissionDenied: "Kebenaran ditolak",
         },
       },
-      explore: {
-        title: "Explorar",
-        lead: "Esta app incluye código de ejemplo para ayudarte a comenzar.",
-        section: {
-          routing: "Enrutamiento basado en archivos",
-          support: "Compatibilidad con Android, iOS y web",
-          images: "Imágenes",
-          theme: "Componentes de modo claro y oscuro",
-          animations: "Animaciones",
-        },
-        routing: {
-          body1:
-            "Esta app tiene dos pantallas: <bold>app/(tabs)/index.tsx</bold> y <bold>app/(tabs)/explore.tsx</bold>",
-          body2:
-            "El archivo de diseño en <bold>app/(tabs)/_layout.tsx</bold> configura el navegador de pestañas.",
-        },
-        learnMore: "Saber más",
-        support: {
-          body: "Puedes abrir este proyecto en Android, iOS y web. Para abrir la versión web, presiona <bold>w</bold> en el terminal que está ejecutando este proyecto.",
-        },
-        images: {
-          body: "Para imágenes estáticas, puedes usar los sufijos <bold>@2x</bold> y <bold>@3x</bold> para proporcionar archivos para diferentes densidades de pantalla",
-        },
-        theme: {
-          body: "Esta plantilla admite modo claro y oscuro. El hook <bold>useColorScheme()</bold> te permite inspeccionar el esquema de color actual del usuario y ajustar los colores de la UI en consecuencia.",
-        },
-        animations: {
-          body: "Esta plantilla incluye un ejemplo de un componente animado. El componente <bold>components/HelloWave.tsx</bold> usa la potente biblioteca <bold>react-native-reanimated</bold> para crear una animación de mano saludando.",
-          iosOnly:
-            "El componente <bold>components/ParallaxScrollView.tsx</bold> proporciona un efecto parallax para la imagen del encabezado.",
-        },
+      transaction: {
+        title: "Butiran Transaksi",
+        noSelected: "Tiada transaksi dipilih.",
+        repeatTransfer: "Ulang Pindahan",
+        dateLabel: "Tarikh",
       },
     },
   },

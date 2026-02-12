@@ -62,7 +62,7 @@ export default function HomeScreen() {
             marginBottom: 8,
           }}
         >
-          Available Balance
+          {t("home.availableBalance")}
         </ThemedText>
         <ThemedText
           style={{

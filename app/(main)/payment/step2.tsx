@@ -8,6 +8,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { Pressable, TextInput } from "react-native";
 import { z } from "zod";
 
@@ -17,21 +18,22 @@ type FormValues = {
 };
 
 export default function PaymentStep2() {
-  const { amount, setAmount, setNote } = usePaymentStore();
+  const { t } = useTranslation();
+  const { setAmount, setNote } = usePaymentStore();
   const { data: balance = 0 } = useBalanceQuery();
   const schema = useMemo(
     () =>
       z.object({
         amount: z
           .string()
-          .regex(/^\d+(\.\d{1,2})?$/, "Invalid amount")
+          .regex(/^\d+(\.\d{1,2})?$/, t("payment.errors.invalidAmount"))
           .refine((val) => {
             const num = Number.parseFloat(val || "0");
             return num > 0 && num <= balance - 10;
-          }, "Insufficient balance (min RM10 remaining)"),
-        note: z.string().max(100, "Note is too long").optional(),
+          }, t("payment.errors.insufficientBalance")),
+        note: z.string().max(100, t("payment.errors.noteTooLong")).optional(),
       }),
-    [balance],
+    [balance, t],
   );
   const {
     control,
@@ -48,7 +50,7 @@ export default function PaymentStep2() {
     reset({ amount: "", note: "" });
     setAmount("");
     setNote("");
-  }, []);
+  }, [reset, setAmount, setNote]);
 
   const watchedAmount = watch("amount");
   const watchedNote = watch("note");
@@ -76,7 +78,7 @@ export default function PaymentStep2() {
               fontWeight: "600",
             }}
             keyboardType="decimal-pad"
-            placeholder="Enter amount"
+            placeholder={t("payment.enterAmount")}
             value={value ? `RM ${value}` : ""}
             onChangeText={(text) => {
               const cleaned = text.replace(/[^0-9.]/g, "");
@@ -120,7 +122,7 @@ export default function PaymentStep2() {
               borderRadius: 8,
               marginBottom: 16,
             }}
-            placeholder="Add a Note (optional)"
+            placeholder={t("payment.noteOptional")}
             value={value}
             onChangeText={onChange}
           />
@@ -147,7 +149,7 @@ export default function PaymentStep2() {
           style={sharedStyles.gradientFill}
         >
           <ThemedText style={sharedStyles.gradientButtonText}>
-            Proceed to Confirmation
+            {t("payment.proceedToConfirmation")}
           </ThemedText>
         </LinearGradient>
       </Pressable>
