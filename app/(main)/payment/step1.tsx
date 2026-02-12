@@ -7,12 +7,7 @@ import * as Contacts from "expo-contacts";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 type ContactRow = { id: string; name: string; phone: string };
 type ReceiverRow = { name: string; accountNumber: string };
@@ -70,7 +65,12 @@ export default function PaymentStep1() {
   }, [activeTab, contacts.length, allReceivers.length]);
 
   return (
-    <View style={[sharedStyles.paymentStep1Container, { backgroundColor: palette.screen }]}>
+    <View
+      style={[
+        sharedStyles.paymentStep1Container,
+        { backgroundColor: palette.screen },
+      ]}
+    >
       <Text
         style={{
           ...defaultTextColor,
@@ -84,7 +84,10 @@ export default function PaymentStep1() {
       </Text>
 
       <View
-        style={[sharedStyles.paymentStep1TabRow, { backgroundColor: palette.surfaceMuted }]}
+        style={[
+          sharedStyles.paymentStep1TabRow,
+          { backgroundColor: palette.surfaceMuted },
+        ]}
       >
         <TouchableOpacity
           style={[
@@ -94,24 +97,33 @@ export default function PaymentStep1() {
           ]}
           onPress={() => setActiveTab("all")}
         >
-          <Text style={[defaultTextColor, sharedStyles.paymentStep1SemiBoldText]}>
+          <Text
+            style={[defaultTextColor, sharedStyles.paymentStep1SemiBoldText]}
+          >
             {t("payment.tabs.all")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
             sharedStyles.paymentStep1TabButton,
-            activeTab === "contacts" && sharedStyles.paymentStep1TabButtonActive,
+            activeTab === "contacts" &&
+              sharedStyles.paymentStep1TabButtonActive,
             activeTab === "contacts" && { backgroundColor: palette.primary },
           ]}
           onPress={() => setActiveTab("contacts")}
         >
-          <Text style={[defaultTextColor, sharedStyles.paymentStep1SemiBoldText]}>
+          <Text
+            style={[defaultTextColor, sharedStyles.paymentStep1SemiBoldText]}
+          >
             {t("payment.tabs.contacts")}
           </Text>
         </TouchableOpacity>
       </View>
-
+      {permissionError && activeTab == "contacts" ? (
+        <Text style={[defaultTextColor, { marginTop: 12 }]}>
+          {permissionError}
+        </Text>
+      ) : null}
       <FlatList
         style={{ marginTop: 12, width: "80%" }}
         data={pagedData}
@@ -120,7 +132,9 @@ export default function PaymentStep1() {
             ? (item as ContactRow).id
             : (item as ReceiverRow).accountNumber
         }
-        ItemSeparatorComponent={() => <View style={sharedStyles.paymentStep1Separator} />}
+        ItemSeparatorComponent={() => (
+          <View style={sharedStyles.paymentStep1Separator} />
+        )}
         onEndReachedThreshold={0.3}
         onEndReached={() => {
           if (page < totalPages) {
@@ -173,7 +187,12 @@ export default function PaymentStep1() {
                   backgroundColor: palette.surface,
                 }}
               >
-                <Text style={[defaultTextColor, sharedStyles.paymentStep1SemiBoldText]}>
+                <Text
+                  style={[
+                    defaultTextColor,
+                    sharedStyles.paymentStep1SemiBoldText,
+                  ]}
+                >
                   {isContacts
                     ? (item as ContactRow).phone
                     : (item as ReceiverRow).accountNumber}
@@ -186,11 +205,6 @@ export default function PaymentStep1() {
           </TouchableOpacity>
         )}
       />
-      {permissionError ? (
-        <Text style={[defaultTextColor, { marginTop: 12 }]}>
-          {permissionError}
-        </Text>
-      ) : null}
     </View>
   );
 }

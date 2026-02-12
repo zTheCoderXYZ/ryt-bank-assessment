@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useBalanceQuery } from "@/api/balance.api";
 import { useTransactionsQuery } from "@/api/transaction.api";
 import AvatarCircle from "@/components/avatar-circle";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { user } from "@/constants/user";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useTransactionsStore } from "@/store/transactions";
 import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
@@ -83,10 +83,16 @@ export default function HomeScreen() {
       </View>
 
       <View
-        style={[sharedStyles.stepContainer, { backgroundColor: palette.surfaceMuted }]}
+        style={[
+          sharedStyles.stepContainer,
+          { backgroundColor: palette.surfaceMuted },
+        ]}
       >
         <Text
-          style={[defaultTextColor, { fontSize: 20, fontWeight: "bold", marginBottom: 8 }]}
+          style={[
+            defaultTextColor,
+            { fontSize: 20, fontWeight: "bold", marginBottom: 8 },
+          ]}
         >
           {t("home.recentTransactions")}
         </Text>
@@ -130,7 +136,12 @@ export default function HomeScreen() {
                         backgroundColor: palette.surface,
                       }}
                     >
-                      <Text style={[defaultTextColor, { fontSize: 16, lineHeight: 24, fontWeight: "600" }]}>
+                      <Text
+                        style={[
+                          defaultTextColor,
+                          { fontSize: 16, lineHeight: 24, fontWeight: "600" },
+                        ]}
+                      >
                         {tx.receiver?.accountNumber}
                       </Text>
                       <Text style={defaultTextColor}>{tx.receiver?.name}</Text>

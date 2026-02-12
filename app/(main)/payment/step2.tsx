@@ -8,7 +8,7 @@ import { router } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 import { z } from "zod";
 
 type FormValues = {
@@ -22,6 +22,7 @@ export default function PaymentStep2() {
   const palette = AppColors[colorScheme];
   const { setAmount, setNote } = usePaymentStore();
   const { data: balance = 0 } = useBalanceQuery();
+  const maxTransferAmount = (balance - 10).toFixed(2);
   const schema = useMemo(
     () =>
       z.object({
@@ -31,16 +32,16 @@ export default function PaymentStep2() {
           .refine((val) => {
             const num = Number.parseFloat(val || "0");
             return num > 0 && num <= balance - 10;
-          }, t("payment.errors.insufficientBalance")),
+          }, t("payment.errors.insufficientBalance", { max: maxTransferAmount })),
         note: z.string().max(100, t("payment.errors.noteTooLong")).optional(),
       }),
-    [balance, t],
+    [balance, maxTransferAmount, t],
   );
   const {
     control,
     watch,
     reset,
-    formState: { isValid },
+    formState: { errors, isValid },
   } = useForm<FormValues>({
     defaultValues: { amount: "", note: "" },
     resolver: zodResolver(schema),
@@ -67,46 +68,60 @@ export default function PaymentStep2() {
         control={control}
         name="amount"
         render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={{
-              color: colorScheme === "dark" ? "white" : "#0F172A",
-              backgroundColor: palette.surfaceElevated,
-              width: "80%",
-              fontSize: 40,
-              padding: 12,
-              borderRadius: 8,
-              marginBottom: 16,
-              fontWeight: "600",
-            }}
-            keyboardType="decimal-pad"
-            placeholder={t("payment.enterAmount")}
-            placeholderTextColor={colorScheme === "dark" ? "white" : "black"}
-            value={value ? `RM ${value}` : ""}
-            onChangeText={(text) => {
-              const cleaned = text.replace(/[^0-9.]/g, "");
-              const parts = cleaned.split(".");
-              let integerPart = parts[0] ?? "";
-              let decimalPart = parts[1] ?? "";
+          <>
+            <TextInput
+              style={{
+                color: colorScheme === "dark" ? "white" : "#0F172A",
+                backgroundColor: palette.surfaceElevated,
+                width: "80%",
+                fontSize: 40,
+                padding: 12,
+                borderRadius: 8,
+                marginBottom: 8,
+                fontWeight: "600",
+              }}
+              keyboardType="decimal-pad"
+              placeholder={t("payment.enterAmount")}
+              placeholderTextColor={colorScheme === "dark" ? "white" : "black"}
+              value={value ? `RM ${value}` : ""}
+              onChangeText={(text) => {
+                const cleaned = text.replace(/[^0-9.]/g, "");
+                const parts = cleaned.split(".");
+                let integerPart = parts[0] ?? "";
+                let decimalPart = parts[1] ?? "";
 
-              integerPart = integerPart.replace(/^0+(?=\d)/, "");
-              if (
-                integerPart === "" &&
-                (parts.length > 1 || cleaned.startsWith("."))
-              ) {
-                integerPart = "0";
-              }
+                integerPart = integerPart.replace(/^0+(?=\d)/, "");
+                if (
+                  integerPart === "" &&
+                  (parts.length > 1 || cleaned.startsWith("."))
+                ) {
+                  integerPart = "0";
+                }
 
-              if (decimalPart.length > 2) {
-                decimalPart = decimalPart.slice(0, 2);
-              }
+                if (decimalPart.length > 2) {
+                  decimalPart = decimalPart.slice(0, 2);
+                }
 
-              const normalized =
-                parts.length <= 1
-                  ? integerPart
-                  : `${integerPart}.${decimalPart}`;
-              onChange(normalized);
-            }}
-          />
+                const normalized =
+                  parts.length <= 1
+                    ? integerPart
+                    : `${integerPart}.${decimalPart}`;
+                onChange(normalized);
+              }}
+            />
+            {errors.amount?.message ? (
+              <Text
+                style={[
+                  sharedStyles.errorText,
+                  { width: "80%", marginBottom: 12, fontSize: 14 },
+                ]}
+              >
+                {errors.amount.message}
+              </Text>
+            ) : (
+              <View style={{ marginBottom: 12 }} />
+            )}
+          </>
         )}
       />
 
@@ -114,21 +129,33 @@ export default function PaymentStep2() {
         control={control}
         name="note"
         render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={{
-              color: colorScheme === "dark" ? "white" : "#0F172A",
-              backgroundColor: palette.surfaceElevated,
-              width: "80%",
-              fontSize: 24,
-              padding: 12,
-              borderRadius: 8,
-              marginBottom: 16,
-            }}
-            placeholder={t("payment.noteOptional")}
-            placeholderTextColor={colorScheme === "dark" ? "white" : "black"}
-            value={value}
-            onChangeText={onChange}
-          />
+          <>
+            <TextInput
+              style={{
+                color: colorScheme === "dark" ? "white" : "#0F172A",
+                backgroundColor: palette.surfaceElevated,
+                width: "80%",
+                fontSize: 24,
+                padding: 12,
+                borderRadius: 8,
+                marginBottom: 8,
+              }}
+              placeholder={t("payment.noteOptional")}
+              placeholderTextColor={colorScheme === "dark" ? "white" : "black"}
+              value={value}
+              onChangeText={onChange}
+            />
+            {errors.note?.message ? (
+              <Text
+                style={[
+                  sharedStyles.errorText,
+                  { width: "80%", marginBottom: 8, fontSize: 14 },
+                ]}
+              >
+                {errors.note.message}
+              </Text>
+            ) : null}
+          </>
         )}
       />
 

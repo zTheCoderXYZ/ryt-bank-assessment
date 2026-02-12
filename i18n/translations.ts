@@ -79,7 +79,7 @@ export const translations = {
         },
         errors: {
           invalidAmount: "Invalid amount",
-          insufficientBalance: "Insufficient balance (min RM10 remaining)",
+          insufficientBalance: "Insufficient balance (max RM {{max}})",
           noteTooLong: "Note is too long",
           incorrectPassword: "Incorrect password. Please try again.",
           permissionDenied: "Permission denied",
@@ -173,8 +173,7 @@ export const translations = {
         },
         errors: {
           invalidAmount: "Jumlah tidak sah",
-          insufficientBalance:
-            "Baki tidak mencukupi (minimum RM10 perlu berbaki)",
+          insufficientBalance: "Baki tidak mencukupi (maksimum RM {{max}})",
           noteTooLong: "Nota terlalu panjang",
           incorrectPassword: "Kata laluan salah. Sila cuba lagi.",
           permissionDenied: "Kebenaran ditolak",
