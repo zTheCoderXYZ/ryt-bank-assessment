@@ -1,8 +1,9 @@
 import { Stack, usePathname, useRouter } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 
 export default function PaymentModule() {
   return (
@@ -34,9 +35,11 @@ function PaymentHeader() {
 
   return (
     <View style={styles.headerContainer}>
-      <Pressable onPress={() => router.back()} style={styles.backButton}>
-        <MaterialIcons name="arrow-back-ios" size={24} color="#E2E8F0" />
-      </Pressable>
+      <Button
+        onPress={() => router.back()}
+        style={styles.backButton}
+        icon={<MaterialIcons name="arrow-back-ios" size={24} color="#E2E8F0" />}
+      />
       <ThemedText style={styles.headerTitle}>{title}</ThemedText>
       <View style={styles.rightSpacer} />
     </View>

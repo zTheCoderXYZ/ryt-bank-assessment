@@ -26,7 +26,8 @@ export const translations = {
         errors: {
           failed: "Login failed.",
           biometricsUnavailable: "Biometrics not available on this device.",
-          biometricFailed: "Biometric authentication failed. Please login normally.",
+          biometricFailed:
+            "Biometric authentication failed. Please login normally.",
         },
       },
       logout: {
@@ -52,8 +53,8 @@ export const translations = {
       payment: {
         title: "Payment",
         selectPerson: "Who are you sending payment to?",
-        enterAmount: "Enter amount",
-        noteOptional: "Add a Note (optional)",
+        enterAmount: "Amount",
+        noteOptional: "Note (optional)",
         proceedToConfirmation: "Proceed to Confirmation",
         confirmPrompt: "Confirm payment",
         fallbackLabel: "Use passcode",
@@ -119,7 +120,8 @@ export const translations = {
         errors: {
           failed: "Log masuk gagal.",
           biometricsUnavailable: "Biometrik tidak tersedia pada peranti ini.",
-          biometricFailed: "Pengesahan biometrik gagal. Sila log masuk seperti biasa.",
+          biometricFailed:
+            "Pengesahan biometrik gagal. Sila log masuk seperti biasa.",
         },
       },
       logout: {
@@ -145,8 +147,8 @@ export const translations = {
       payment: {
         title: "Pembayaran",
         selectPerson: "Kepada siapa anda ingin membuat pembayaran?",
-        enterAmount: "Masukkan jumlah",
-        noteOptional: "Tambah nota (pilihan)",
+        enterAmount: "Amaun",
+        noteOptional: "Nota (pilihan)",
         proceedToConfirmation: "Teruskan ke Pengesahan",
         confirmPrompt: "Sahkan pembayaran",
         fallbackLabel: "Guna kod laluan",
@@ -171,7 +173,8 @@ export const translations = {
         },
         errors: {
           invalidAmount: "Jumlah tidak sah",
-          insufficientBalance: "Baki tidak mencukupi (minimum RM10 perlu berbaki)",
+          insufficientBalance:
+            "Baki tidak mencukupi (minimum RM10 perlu berbaki)",
           noteTooLong: "Nota terlalu panjang",
           incorrectPassword: "Kata laluan salah. Sila cuba lagi.",
           permissionDenied: "Kebenaran ditolak",

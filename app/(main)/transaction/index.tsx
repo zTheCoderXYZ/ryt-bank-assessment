@@ -1,11 +1,12 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { Button } from "@/components/ui/button";
 import { usePaymentStore } from "@/store/payment";
 import { useTransactionsStore } from "@/store/transactions";
 import { sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 export default function TransactionDetail() {
   const { t, i18n } = useTranslation();
@@ -18,9 +19,12 @@ export default function TransactionDetail() {
     return (
       <ThemedView style={sharedStyles.container}>
         <ThemedText>{t("transaction.noSelected")}</ThemedText>
-        <Pressable onPress={() => router.back()} style={styles.button}>
-          <ThemedText style={styles.buttonText}>{t("common.goBack")}</ThemedText>
-        </Pressable>
+        <Button
+          label={t("common.goBack")}
+          onPress={() => router.back()}
+          style={styles.button}
+          textStyle={styles.buttonText}
+        />
       </ThemedView>
     );
   }
@@ -46,7 +50,8 @@ export default function TransactionDetail() {
         </ThemedText>
       </ThemedView>
 
-      <Pressable
+      <Button
+        label={t("transaction.repeatTransfer")}
         style={styles.button}
         onPress={() => {
           setReceiver(transaction.receiver);
@@ -54,11 +59,8 @@ export default function TransactionDetail() {
           setNote(transaction.note);
           router.push("/payment/step3");
         }}
-      >
-        <ThemedText style={styles.buttonText}>
-          {t("transaction.repeatTransfer")}
-        </ThemedText>
-      </Pressable>
+        textStyle={styles.buttonText}
+      />
     </ThemedView>
   );
 }

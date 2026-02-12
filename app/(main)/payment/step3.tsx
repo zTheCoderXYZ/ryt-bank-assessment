@@ -1,4 +1,5 @@
 import { useTransferMutation } from "@/api/transfer.api";
+import { Button } from "@/components/ui/button";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AUTH_FALLBACK_PIN } from "@/constants/auth";
@@ -7,7 +8,7 @@ import * as LocalAuthentication from "expo-local-authentication";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Modal, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { Modal, StyleSheet, TextInput, View } from "react-native";
 
 export default function PaymentStep3() {
   const { t } = useTranslation();
@@ -111,7 +112,10 @@ export default function PaymentStep3() {
       >
         {t("payment.noteLabel")}: {note}
       </ThemedText>
-      <Pressable
+      <Button
+        label={
+          isConfirming ? t("payment.confirming") : t("payment.confirmPayment")
+        }
         style={{
           backgroundColor: "green",
           padding: 12,
@@ -122,15 +126,8 @@ export default function PaymentStep3() {
         }}
         onPress={handleConfirm}
         disabled={isConfirming}
-      >
-        <ThemedText
-          style={{ color: "white", fontWeight: "bold", fontSize: 18 }}
-        >
-          {isConfirming
-            ? t("payment.confirming")
-            : t("payment.confirmPayment")}
-        </ThemedText>
-      </Pressable>
+        textStyle={{ color: "white", fontWeight: "bold", fontSize: 18 }}
+      />
       <Modal
         animationType="fade"
         transparent
@@ -154,12 +151,16 @@ export default function PaymentStep3() {
               <ThemedText style={styles.errorText}>{pinError}</ThemedText>
             ) : null}
             <View style={styles.modalActions}>
-              <Pressable onPress={() => setShowPinModal(false)}>
-                <ThemedText type="defaultSemiBold">{t("common.cancel")}</ThemedText>
-              </Pressable>
-              <Pressable onPress={handlePinSubmit}>
-                <ThemedText type="defaultSemiBold">{t("common.submit")}</ThemedText>
-              </Pressable>
+              <Button
+                label={t("common.cancel")}
+                textType="defaultSemiBold"
+                onPress={() => setShowPinModal(false)}
+              />
+              <Button
+                label={t("common.submit")}
+                textType="defaultSemiBold"
+                onPress={handlePinSubmit}
+              />
             </View>
           </ThemedView>
         </View>

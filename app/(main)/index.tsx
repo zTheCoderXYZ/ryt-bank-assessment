@@ -29,6 +29,7 @@ export default function HomeScreen() {
           lineHeight: 42,
           fontWeight: "bold",
           marginBottom: 8,
+          textAlign: "center",
         }}
       >
         {t("home.welcome")} {user.name}

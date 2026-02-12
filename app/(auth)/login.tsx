@@ -1,12 +1,12 @@
-import { LinearGradient } from "expo-linear-gradient";
 import * as LocalAuthentication from "expo-local-authentication";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Modal, Pressable, TextInput, View } from "react-native";
+import { Modal, TextInput, View } from "react-native";
 
 import { useLoginMutation } from "@/api/login.api";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { Button } from "@/components/ui/button";
 import { sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -65,6 +65,8 @@ export default function LoginPage() {
           fontWeight: "bold",
           marginTop: 48,
           lineHeight: 32,
+          textAlign: "center",
+          padding: 8,
         }}
       >
         {t("login.tagline")}
@@ -103,7 +105,8 @@ export default function LoginPage() {
       />
 
       <ThemedView style={sharedStyles.bioButton}>
-        <Pressable
+        <Button
+          label={t("login.button")}
           onPress={async () => {
             await executeLogin(undefined, {
               onSuccess: () => {
@@ -115,46 +118,27 @@ export default function LoginPage() {
             });
           }}
           disabled={bioLoading}
-          style={({ pressed }) => [
-            sharedStyles.gradientButton,
-            pressed && sharedStyles.gradientButtonPressed,
-            bioLoading && sharedStyles.gradientButtonDisabled,
-          ]}
-        >
-          <LinearGradient
-            colors={["#1E40AF", "#2563EB"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={sharedStyles.gradientFill}
-          >
-            <ThemedText style={sharedStyles.gradientButtonText}>
-              {t("login.button")}
-            </ThemedText>
-          </LinearGradient>
-        </Pressable>
+          style={sharedStyles.gradientButton}
+          pressedStyle={sharedStyles.gradientButtonPressed}
+          disabledStyle={sharedStyles.gradientButtonDisabled}
+          gradient
+          contentStyle={sharedStyles.gradientFill}
+          textStyle={sharedStyles.gradientButtonText}
+        />
       </ThemedView>
 
       <ThemedView style={sharedStyles.bioButton}>
-        <Pressable
+        <Button
+          label={t("login.biometrics.button")}
           onPress={handleBiometricLogin}
           disabled={bioLoading}
-          style={({ pressed }) => [
-            sharedStyles.gradientButton,
-            pressed && sharedStyles.gradientButtonPressed,
-            bioLoading && sharedStyles.gradientButtonDisabled,
-          ]}
-        >
-          <LinearGradient
-            colors={["#1E40AF", "#2563EB"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={sharedStyles.gradientFill}
-          >
-            <ThemedText style={sharedStyles.gradientButtonText}>
-              {t("login.biometrics.button")}
-            </ThemedText>
-          </LinearGradient>
-        </Pressable>
+          style={sharedStyles.gradientButton}
+          pressedStyle={sharedStyles.gradientButtonPressed}
+          disabledStyle={sharedStyles.gradientButtonDisabled}
+          gradient
+          contentStyle={sharedStyles.gradientFill}
+          textStyle={sharedStyles.gradientButtonText}
+        />
       </ThemedView>
       <Modal
         animationType="fade"
@@ -169,9 +153,11 @@ export default function LoginPage() {
             </ThemedText>
             <ThemedText style={sharedStyles.errorText}>{bioError}</ThemedText>
             <View style={sharedStyles.modalActions}>
-              <Pressable onPress={() => setBioError(null)}>
-                <ThemedText type="defaultSemiBold">{t("common.cancel")}</ThemedText>
-              </Pressable>
+              <Button
+                label={t("common.cancel")}
+                textType="defaultSemiBold"
+                onPress={() => setBioError(null)}
+              />
             </View>
           </ThemedView>
         </View>

@@ -53,6 +53,7 @@ export const sharedStyles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 24,
     lineHeight: 32,
+    textAlign: "center",
   },
   bioError: {
     marginTop: 8,

@@ -3,12 +3,12 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Fonts } from "@/constants/theme";
 import { receivers } from "@/constants/user";
+import { usePaymentStore } from "@/store/payment";
 import * as Contacts from "expo-contacts";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { usePaymentStore } from "@/store/payment";
 
 type ContactRow = { id: string; name: string; phone: string };
 type ReceiverRow = { name: string; accountNumber: string };
@@ -69,6 +69,7 @@ export default function PaymentStep1() {
         style={{
           fontFamily: Fonts.rounded,
           fontSize: 20,
+          textAlign: "center",
         }}
       >
         {t("payment.selectPerson")}
@@ -82,7 +83,9 @@ export default function PaymentStep1() {
           ]}
           onPress={() => setActiveTab("all")}
         >
-          <ThemedText type="defaultSemiBold">{t("payment.tabs.all")}</ThemedText>
+          <ThemedText type="defaultSemiBold">
+            {t("payment.tabs.all")}
+          </ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -91,7 +94,9 @@ export default function PaymentStep1() {
           ]}
           onPress={() => setActiveTab("contacts")}
         >
-          <ThemedText type="defaultSemiBold">{t("payment.tabs.contacts")}</ThemedText>
+          <ThemedText type="defaultSemiBold">
+            {t("payment.tabs.contacts")}
+          </ThemedText>
         </TouchableOpacity>
       </View>
 

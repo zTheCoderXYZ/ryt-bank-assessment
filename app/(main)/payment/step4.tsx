@@ -1,13 +1,12 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { Button } from "@/components/ui/button";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useTransactionsStore } from "@/store/transactions";
 import { sharedStyles } from "@/styles/index.stylesheet";
 import { useQueryClient } from "@tanstack/react-query";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable } from "react-native";
 
 export default function PaymentStep4() {
   const { t } = useTranslation();
@@ -76,7 +75,8 @@ export default function PaymentStep4() {
         {t("payment.noteLabel")}: {latest?.note}
       </ThemedText>
 
-      <Pressable
+      <Button
+        label={t("common.done")}
         style={{
           backgroundColor: "#1D4ED8",
           borderRadius: 8,
@@ -90,18 +90,10 @@ export default function PaymentStep4() {
           router.dismissAll();
           router.replace("/(main)");
         }}
-      >
-        <LinearGradient
-          colors={["#1E40AF", "#2563EB"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={sharedStyles.gradientFill}
-        >
-          <ThemedText style={sharedStyles.gradientButtonText}>
-            {t("common.done")}
-          </ThemedText>
-        </LinearGradient>
-      </Pressable>
+        gradient
+        contentStyle={sharedStyles.gradientFill}
+        textStyle={sharedStyles.gradientButtonText}
+      />
     </ThemedView>
   );
 }

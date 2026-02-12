@@ -1,15 +1,14 @@
 import { useBalanceQuery } from "@/api/balance.api";
-import { ThemedText } from "@/components/themed-text";
+import { Button } from "@/components/ui/button";
 import { ThemedView } from "@/components/themed-view";
 import { usePaymentStore } from "@/store/payment";
 import { sharedStyles } from "@/styles/index.stylesheet";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Pressable, TextInput } from "react-native";
+import { TextInput } from "react-native";
 import { z } from "zod";
 
 type FormValues = {
@@ -129,30 +128,23 @@ export default function PaymentStep2() {
         )}
       />
 
-      <Pressable
+      <Button
+        label={t("payment.proceedToConfirmation")}
         style={{
           backgroundColor: "#1D4ED8",
           borderRadius: 8,
           overflow: "hidden",
           marginTop: 48,
-          opacity: isValid ? 1 : 0.6,
         }}
         onPress={() => {
           router.push("/payment/step3");
         }}
         disabled={!isValid}
-      >
-        <LinearGradient
-          colors={["#1E40AF", "#2563EB"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={sharedStyles.gradientFill}
-        >
-          <ThemedText style={sharedStyles.gradientButtonText}>
-            {t("payment.proceedToConfirmation")}
-          </ThemedText>
-        </LinearGradient>
-      </Pressable>
+        disabledStyle={{ opacity: 0.6 }}
+        gradient
+        contentStyle={sharedStyles.gradientFill}
+        textStyle={sharedStyles.gradientButtonText}
+      />
     </ThemedView>
   );
 }
