@@ -1,13 +1,16 @@
 import { useTranslation } from "react-i18next";
 
 import { useBalanceQuery } from "@/api/balance.api";
+import { useLogoutMutation } from "@/api/logout.api";
 import { useTransactionsQuery } from "@/api/transaction.api";
 import AvatarCircle from "@/components/avatar-circle";
+import ErrorModal from "@/components/error-modal";
 import { user } from "@/constants/user";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useTransactionsStore } from "@/store/transactions";
 import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,9 +20,29 @@ export default function HomeScreen() {
   const palette = AppColors[colorScheme];
   const defaultTextColor = { color: palette.text };
   const { selectTransaction } = useTransactionsStore();
-  const { data: transactions = [] } = useTransactionsQuery();
-  const { data: balance } = useBalanceQuery();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { mutateAsync: executeLogout } = useLogoutMutation();
+  const {
+    data: transactions = [],
+    isError: isTransactionsError,
+    error: transactionsError,
+  } = useTransactionsQuery({ retry: false });
+  const {
+    data: balance,
+    isError: isBalanceError,
+    error: balanceError,
+  } = useBalanceQuery({ retry: false });
 
+  useEffect(() => {
+    if (isTransactionsError) {
+      setErrorMessage(transactionsError?.message ?? t("common.errorTitle"));
+      return;
+    }
+
+    if (isBalanceError) {
+      setErrorMessage(balanceError?.message ?? t("common.errorTitle"));
+    }
+  }, [balanceError, isBalanceError, isTransactionsError, t, transactionsError]);
   return (
     <SafeAreaView
       style={[sharedStyles.container, { backgroundColor: palette.screen }]}
@@ -162,6 +185,22 @@ export default function HomeScreen() {
           </ScrollView>
         )}
       </View>
+      <ErrorModal
+        message={errorMessage}
+        onClose={() => {
+          setErrorMessage(null);
+          executeLogout(undefined, {
+            onSuccess: () => {
+              router.replace("/(auth)/login");
+            },
+            onError: (error) => {
+              setErrorMessage(error.message);
+            },
+          }).catch((error) => {
+            console.error("Logout mutation failed:", error);
+          });
+        }}
+      />
       {/* <Button
         title={t("logout.button")}
         onPress={async () => {

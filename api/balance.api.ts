@@ -1,8 +1,13 @@
 import { useLoadingStore } from "@/store/loading";
 import { useUserStore } from "@/store/user";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
-export const useBalanceQuery = () =>
+type BalanceQueryOptions = Omit<
+  UseQueryOptions<number, Error>,
+  "queryKey" | "queryFn"
+>;
+
+export const useBalanceQuery = (options?: BalanceQueryOptions) =>
   useQuery({
     queryKey: ["balance"],
     queryFn: async () => {
@@ -11,8 +16,12 @@ export const useBalanceQuery = () =>
       try {
         await new Promise((resolve) => setTimeout(resolve, 2000));
         return useUserStore.getState().balance;
+      } catch (error) {
+        console.error("Failed to fetch balance:", error);
+        throw error;
       } finally {
         stop();
       }
     },
+    ...options,
   });

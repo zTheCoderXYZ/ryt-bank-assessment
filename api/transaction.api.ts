@@ -1,8 +1,13 @@
 import { useLoadingStore } from "@/store/loading";
-import { useTransactionsStore } from "@/store/transactions";
-import { useQuery } from "@tanstack/react-query";
+import { Transaction, useTransactionsStore } from "@/store/transactions";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
-export const useTransactionsQuery = () =>
+type TransactionsQueryOptions = Omit<
+  UseQueryOptions<Transaction[], Error>,
+  "queryKey" | "queryFn"
+>;
+
+export const useTransactionsQuery = (options?: TransactionsQueryOptions) =>
   useQuery({
     queryKey: ["transactions"],
     queryFn: async () => {
@@ -11,8 +16,12 @@ export const useTransactionsQuery = () =>
       try {
         await new Promise((resolve) => setTimeout(resolve, 2000));
         return useTransactionsStore.getState().transactions;
+      } catch (error) {
+        console.error("Failed to fetch transactions:", error);
+        throw error;
       } finally {
         stop();
       }
     },
+    ...options,
   });

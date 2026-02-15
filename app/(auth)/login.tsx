@@ -1,9 +1,10 @@
 import * as LocalAuthentication from "expo-local-authentication";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Modal, Text, TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 
 import { useLoginMutation } from "@/api/login.api";
+import ErrorModal from "@/components/error-modal";
 import { Button } from "@/components/ui/button";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
@@ -15,19 +16,19 @@ export default function LoginPage() {
   const colorScheme = useColorScheme() ?? "light";
   const palette = AppColors[colorScheme];
   const defaultTextColor = { color: palette.text };
-  const [bioError, setBioError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [bioLoading, setBioLoading] = useState(false);
   const { mutateAsync: executeLogin } = useLoginMutation();
 
   const handleBiometricLogin = async () => {
-    setBioError(null);
+    setErrorMessage(null);
     setBioLoading(true);
     try {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
       if (!hasHardware || !isEnrolled) {
-        setBioError(t("login.errors.biometricsUnavailable"));
+        setErrorMessage(t("login.errors.biometricsUnavailable"));
         return;
       }
 
@@ -37,19 +38,24 @@ export default function LoginPage() {
       });
 
       if (result.success) {
-        await executeLogin(undefined, {
-          onSuccess: () => {
-            router.replace("/(main)");
-          },
-          onError: () => {
-            setBioError(t("login.errors.failed"));
-          },
-        });
+        try {
+          await executeLogin(undefined, {
+            onSuccess: () => {
+              router.replace("/(main)");
+            },
+            onError: (error) => {
+              setErrorMessage(error.message);
+            },
+          });
+        } catch (error) {
+          console.error("Login mutation failed:", error);
+        }
       } else {
-        setBioError(t("login.errors.biometricFailed"));
+        setErrorMessage(t("login.errors.biometricFailed"));
       }
-    } catch {
-      setBioError(t("login.errors.biometricFailed"));
+    } catch (error) {
+      console.error("Biometric login failed:", error);
+      setErrorMessage(t("login.errors.biometricFailed"));
     } finally {
       setBioLoading(false);
     }
@@ -118,14 +124,18 @@ export default function LoginPage() {
         <Button
           label={t("login.button")}
           onPress={async () => {
-            await executeLogin(undefined, {
-              onSuccess: () => {
-                router.replace("/(main)");
-              },
-              onError: () => {
-                setBioError(t("login.errors.failed"));
-              },
-            });
+            try {
+              await executeLogin(undefined, {
+                onSuccess: () => {
+                  router.replace("/(main)");
+                },
+                onError: (error) => {
+                  setErrorMessage(error.message);
+                },
+              });
+            } catch (error) {
+              console.error("Login mutation failed:", error);
+            }
           }}
           disabled={bioLoading}
           style={[
@@ -154,34 +164,10 @@ export default function LoginPage() {
           textStyle={sharedStyles.gradientButtonText}
         />
       </View>
-      <Modal
-        animationType="fade"
-        transparent
-        visible={Boolean(bioError)}
-        onRequestClose={() => setBioError(null)}
-      >
-        <View style={sharedStyles.modalBackdrop}>
-          <View style={sharedStyles.modalCard}>
-            <Text
-              style={[
-                defaultTextColor,
-                sharedStyles.modalTitle,
-                { fontWeight: "600" },
-              ]}
-            >
-              {t("login.biometrics.errorTitle")}
-            </Text>
-            <Text style={sharedStyles.errorText}>{bioError}</Text>
-            <View style={sharedStyles.modalActions}>
-              <Button
-                label={t("common.cancel")}
-                textStyle={{ fontWeight: "600" }}
-                onPress={() => setBioError(null)}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <ErrorModal
+        message={errorMessage}
+        onClose={() => setErrorMessage(null)}
+      />
     </SafeAreaView>
   );
 }

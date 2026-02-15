@@ -1,4 +1,5 @@
 import { useTransferMutation } from "@/api/transfer.api";
+import ErrorModal from "@/components/error-modal";
 import { Button } from "@/components/ui/button";
 import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import { AUTH_FALLBACK_PIN } from "@/constants/auth";
@@ -17,6 +18,7 @@ export default function PaymentStep3() {
   const defaultTextColor = { color: palette.text };
   const { amount, note, receiver, reset } = usePaymentStore();
   const [isConfirming, setIsConfirming] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { mutateAsync: executeTransfer } = useTransferMutation();
 
   const [showPinModal, setShowPinModal] = useState(false);
@@ -24,6 +26,7 @@ export default function PaymentStep3() {
   const [pinError, setPinError] = useState<string | null>(null);
 
   const handleConfirm = async () => {
+    setErrorMessage(null);
     setIsConfirming(true);
     try {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
@@ -42,39 +45,56 @@ export default function PaymentStep3() {
 
       if (result.success) {
         const currentDate = new Date().toISOString();
-        await executeTransfer(
-          { receiver, amount, note, date: currentDate },
-          {
-            onSuccess: () => {
-              reset();
-              router.dismissAll();
-              router.push("/payment/step4");
+        try {
+          await executeTransfer(
+            { receiver, amount, note, date: currentDate },
+            {
+              onSuccess: () => {
+                reset();
+                router.dismissAll();
+                router.push("/payment/step4");
+              },
+              onError: (error) => {
+                setErrorMessage(error.message);
+              },
             },
-          },
-        );
+          );
+        } catch (error) {
+          console.error("Transfer mutation failed:", error);
+        }
       } else {
         setShowPinModal(true); // fallback to password on failure/cancel
       }
+    } catch (error) {
+      console.error("Payment confirmation failed:", error);
     } finally {
       setIsConfirming(false);
     }
   };
 
   const handlePinSubmit = async () => {
+    setErrorMessage(null);
     if (pin === AUTH_FALLBACK_PIN) {
       setPinError(null);
       setShowPinModal(false);
       setPin("");
-      await executeTransfer(
-        { receiver, amount, note, date: new Date().toISOString() },
-        {
-          onSuccess: () => {
-            reset();
-            router.dismissAll();
-            router.push("/payment/step4");
+      try {
+        await executeTransfer(
+          { receiver, amount, note, date: new Date().toISOString() },
+          {
+            onSuccess: () => {
+              reset();
+              router.dismissAll();
+              router.push("/payment/step4");
+            },
+            onError: (error) => {
+              setErrorMessage(error.message);
+            },
           },
-        },
-      );
+        );
+      } catch (error) {
+        console.error("Transfer mutation failed:", error);
+      }
       return;
     }
     setPinError(t("payment.errors.incorrectPassword"));
@@ -182,6 +202,10 @@ export default function PaymentStep3() {
           </View>
         </View>
       </Modal>
+      <ErrorModal
+        message={errorMessage}
+        onClose={() => setErrorMessage(null)}
+      />
     </View>
   );
 }

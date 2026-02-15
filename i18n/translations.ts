@@ -10,6 +10,7 @@ export const translations = {
         done: "Done",
         goBack: "Go Back",
         unknown: "Unknown",
+        errorTitle: "Error",
       },
       login: {
         welcome: "Welcome to Ryt Bank",
@@ -104,6 +105,7 @@ export const translations = {
         done: "Selesai",
         goBack: "Kembali",
         unknown: "Tidak diketahui",
+        errorTitle: "Ralat",
       },
       login: {
         welcome: "Selamat datang ke Ryt Bank",

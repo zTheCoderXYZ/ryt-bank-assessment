@@ -1,11 +1,12 @@
 import { useBalanceQuery } from "@/api/balance.api";
+import ErrorModal from "@/components/error-modal";
 import { Button } from "@/components/ui/button";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { usePaymentStore } from "@/store/payment";
 import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Text, TextInput, View } from "react-native";
@@ -21,7 +22,8 @@ export default function PaymentStep2() {
   const colorScheme = useColorScheme() ?? "light";
   const palette = AppColors[colorScheme];
   const { setAmount, setNote } = usePaymentStore();
-  const { data: balance = 0 } = useBalanceQuery();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { data: balance = 0, isError, error } = useBalanceQuery();
   const maxTransferAmount = (balance - 10).toFixed(2);
   const schema = useMemo(
     () =>
@@ -61,6 +63,12 @@ export default function PaymentStep2() {
     setAmount(watchedAmount || "");
     setNote(watchedNote || "");
   }, [watchedAmount, watchedNote, setAmount, setNote]);
+
+  useEffect(() => {
+    if (isError) {
+      setErrorMessage(error?.message ?? t("common.errorTitle"));
+    }
+  }, [error, isError, t]);
 
   return (
     <View style={[sharedStyles.container, { backgroundColor: palette.screen }]}>
@@ -176,6 +184,10 @@ export default function PaymentStep2() {
           sharedStyles.gradientFill,
         ]}
         textStyle={sharedStyles.gradientButtonText}
+      />
+      <ErrorModal
+        message={errorMessage}
+        onClose={() => setErrorMessage(null)}
       />
     </View>
   );

@@ -1,4 +1,5 @@
 import { useLogoutMutation } from "@/api/logout.api";
+import ErrorModal from "@/components/error-modal";
 import { Button } from "@/components/ui/button";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useSettingsStore } from "@/store/settings";
@@ -6,6 +7,7 @@ import { AppColors, sharedStyles } from "@/styles/index.stylesheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { changeLanguage } from "i18next";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
@@ -15,6 +17,7 @@ export default function SettingsPage() {
   const palette = AppColors[colorScheme];
   const defaultTextColor = { color: palette.text };
   const { language, setLanguage, theme, setTheme } = useSettingsStore();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { mutateAsync: executeLogout } = useLogoutMutation();
   return (
     <View style={[sharedStyles.container, { backgroundColor: palette.screen }]}>
@@ -124,13 +127,24 @@ export default function SettingsPage() {
           width: "80%",
         }}
         onPress={async () => {
-          await executeLogout(undefined, {
-            onSuccess: () => {
-              router.replace("/(auth)/login");
-            },
-          });
+          try {
+            await executeLogout(undefined, {
+              onSuccess: () => {
+                router.replace("/(auth)/login");
+              },
+              onError: (error) => {
+                setErrorMessage(error.message);
+              },
+            });
+          } catch (error) {
+            console.error("Logout mutation failed:", error);
+          }
         }}
         textStyle={sharedStyles.gradientButtonText}
+      />
+      <ErrorModal
+        message={errorMessage}
+        onClose={() => setErrorMessage(null)}
       />
     </View>
   );

@@ -19,6 +19,9 @@ export const useTransferMutation = () =>
         addTransaction({ ...transaction, id: transactionId });
         useUserStore.getState().decrementBalance(Number(transaction.amount));
         return true;
+      } catch (error) {
+        console.error("Transfer failed:", error);
+        throw error;
       } finally {
         stop();
       }

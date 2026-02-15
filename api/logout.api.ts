@@ -11,6 +11,9 @@ export const useLogoutMutation = () =>
         await new Promise((resolve) => setTimeout(resolve, 2000));
         useAuthStore.getState().logout();
         return true;
+      } catch (error) {
+        console.error("Logout failed:", error);
+        throw error;
       } finally {
         stop();
       }

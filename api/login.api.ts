@@ -11,6 +11,9 @@ export const useLoginMutation = () =>
         await new Promise((resolve) => setTimeout(resolve, 2000));
         useAuthStore.getState().login("dummy-token");
         return true;
+      } catch (error) {
+        console.error("Login failed:", error);
+        throw error;
       } finally {
         stop();
       }
