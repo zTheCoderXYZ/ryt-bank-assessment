@@ -27,6 +27,7 @@ export default function RootLayout() {
     <SafeAreaView style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
+          sceneStyle: { backgroundColor: palette.screen },
           tabBarActiveTintColor: palette.primary,
           headerShown: !hideHeader,
           header: () => (hideHeader ? null : <MainHeader />),
@@ -52,6 +53,7 @@ export default function RootLayout() {
           name="payment"
           options={{
             title: t("payment.title"),
+            popToTopOnBlur: true,
             tabBarIcon: ({ color }) => (
               <IconSymbol size={28} name="paperplane.fill" color={color} />
             ),
